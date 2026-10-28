@@ -1,5 +1,20 @@
 # PROJECT CONTEXT — Garage Management System
 
+## Quét ảnh tại từng trường xe — 28/10/2026
+
+- Theo yêu cầu người dùng, model AutoVision `car_classifier.tflite` 44 MB được đưa trực tiếp vào Git cùng code/metadata/LICENSE; clone mới có sẵn model và không cần chép hoặc tải riêng. Đã bỏ quy tắc ignore model trong `mobile/.gitignore`.
+- Mục chụp/chọn ảnh của form chỉ hiển thị **Ảnh xe** để dùng với AutoVision; đã bỏ nội dung giấy đăng kiểm khỏi nhãn, hướng dẫn chọn ảnh và hộp thoại quyền camera.
+- Form xe Android có biểu tượng máy ảnh nhỏ bên dưới góc phải của Biển số xe, Số ODO hiện tại và Số khung / VIN. Bấm biểu tượng mở thẳng lựa chọn chụp ảnh hoặc chọn từ thư viện; OCR chỉ đề xuất thông tin của trường đó và vẫn yêu cầu xác nhận trước khi điền.
+- Đã bỏ nút quét chung và menu chọn thông tin cần quét. Năm sản xuất nhập thủ công. Xe đã lưu giữ biển số chỉ đọc và khóa biểu tượng quét biển số; ODO/VIN vẫn cho quét. AutoVision hãng/dòng, ảnh hồ sơ và luồng lưu xe giữ nguyên.
+- `flutter analyze --no-pub` sạch; 12 test form xe/OCR đạt, gồm fixture TRIP và hai test mới cho camera từng trường, khóa quét biển số xe đã lưu. Chưa chạy/build app Flutter hoặc thử camera/OCR native trên điện thoại.
+- Các đường dẫn Agent Pack, checklist, thiết kế Stitch và nhật ký phiên bên ngoài repository tại ổ D: không tồn tại trên máy hiện tại; chưa cập nhật snapshot/nhật ký ngoài repo.
+
+## Quét trường xe từ ảnh trên Android — 26/10/2026
+
+- AutoVision v5.13.0 vẫn chỉ phân loại hãng/dòng. Mobile bổ sung Google ML Kit Text Recognition 0.16.0 để đọc chữ từ ảnh giấy đăng ký, biển số, VIN, đồng hồ ODO hoặc năm sản xuất. Người dùng xác nhận trước khi điền vào form; biển số xe đã tạo vẫn chỉ đọc.
+- Parser chỉ nhận VIN 17 ký tự, năm có nhãn sản xuất và ODO rõ tổng km; giá trị mơ hồ phải nhập tay. Ảnh OCR xử lý trên thiết bị, không upload. `Xe`/`HinhAnhXe`, API và RBAC không đổi; lưu vào database chỉ xảy ra khi bấm lưu xe.
+- `flutter analyze --no-pub` sạch và 10 test OCR/form xe đạt trước tinh chỉnh cuối để bỏ qua dòng TRIP; fixture TRIP cập nhật chưa chạy lại. Chưa `flutter run`/`flutter build` hay kiểm tra OCR native trên Galaxy Note20 Ultra 5G. Xem `docs/AUTOVISION_MOBILE_INTEGRATION.md`.
+
 ## Việt hóa bảng chat hỗ trợ — 11/10/2026
 
 - Đã áp `V08__support_chat_vietnamese_names.sql` vào SQL Server Docker local: `SupportConversation` → `HoiThoaiHoTro`, `SupportMessage` → `TinNhanHoTro`, `SupportReadCursor` → `TrangThaiDocHoTro`; đổi 19 tên cột theo đề xuất.

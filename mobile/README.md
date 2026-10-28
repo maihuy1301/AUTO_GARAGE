@@ -47,6 +47,8 @@ Có thể kiểm tra nhanh mà không đổi source bằng `flutter run --no-ena
 
 Trong màn `Xe của tôi`, khách hàng có thể chụp ảnh hoặc chọn ảnh từ thư viện khi thêm xe. Camera được xin quyền tại thời điểm sử dụng; ảnh được xem trước, giới hạn 8 MB và upload sau khi hồ sơ xe được tạo. Backend phải có migration `HinhAnhXe` và thư mục lưu ảnh có quyền ghi; xem lệnh `database/apply-vehicle-image-migration.ps1` ở thư mục gốc dự án.
 
+Trên Android, biểu tượng máy ảnh bên dưới góc phải của **Biển số xe**, **Số ODO hiện tại** và **Số khung / VIN** cho chụp hoặc chọn ảnh riêng của đúng trường đó. Đã bỏ nút quét chung và menu chọn thông tin cần quét; năm sản xuất nhập thủ công. OCR chạy tại thiết bị, hiện kết quả để xác nhận trước khi điền form và không upload ảnh quét. Biển số xe đã lưu vẫn chỉ đọc và không cho quét để thay đổi. AutoVision vẫn dùng ảnh toàn xe để gợi ý hãng/dòng. Xem [tài liệu tích hợp](../docs/AUTOVISION_MOBILE_INTEGRATION.md) để biết giới hạn nhận diện.
+
 ## Thông báo khách hàng
 
 Tab `/notifications` dùng `GET /notifications`, `GET /notifications/unread-count`, `PATCH /notifications/{id}/read` và `PATCH /notifications/read-all` qua API client có JWT. Số chưa đọc được lấy từ backend; sau thao tác đọc, app tải lại dữ liệu và không tự suy diễn quyền sở hữu.

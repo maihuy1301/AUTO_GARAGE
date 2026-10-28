@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../data/autovision_recognizer.dart';
 import '../data/vehicle_service.dart';
+import '../data/vehicle_text_recognizer.dart';
 import '../domain/vehicle_models.dart';
 
 class VehicleFormResult {
@@ -24,19 +27,33 @@ Future<VehicleFormResult?> showVehicleFormSheet(
   BuildContext context,
   VehicleGateway gateway, {
   CustomerVehicle? vehicle,
+  AutoVisionRecognizer? recognizer,
+  VehicleTextRecognizer? textRecognizer,
 }) {
   return showModalBottomSheet<VehicleFormResult>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
     showDragHandle: true,
-    builder: (_) => _VehicleFormSheet(gateway: gateway, vehicle: vehicle),
+    builder: (_) => _VehicleFormSheet(
+      gateway: gateway,
+      vehicle: vehicle,
+      recognizer: recognizer ?? OnDeviceAutoVisionRecognizer(),
+      textRecognizer: textRecognizer ?? MlKitVehicleTextRecognizer(),
+    ),
   );
 }
 
 class _VehicleFormSheet extends StatefulWidget {
-  const _VehicleFormSheet({required this.gateway, this.vehicle});
+  const _VehicleFormSheet({
+    required this.gateway,
+    required this.recognizer,
+    required this.textRecognizer,
+    this.vehicle,
+  });
   final VehicleGateway gateway;
+  final AutoVisionRecognizer recognizer;
+  final VehicleTextRecognizer textRecognizer;
   final CustomerVehicle? vehicle;
 
   @override
@@ -63,6 +80,13 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
   String? _catalogError;
   String? _error;
   XFile? _selectedImage;
+  AutoVisionResult? _recognition;
+  String? _recognitionError;
+  bool _isRecognizing = false;
+  bool _isScanningText = false;
+  String? _scanError;
+  VehicleScanTarget? _scanTarget;
+  int _imageVersion = 0;
   bool get _isEditing => widget.vehicle != null;
 
   @override
@@ -239,7 +263,7 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Thêm ảnh hồ sơ xe',
+                'Thêm ảnh xe',
                 style: Theme.of(
                   sheetContext,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
@@ -289,6 +313,10 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
       if (mounted) {
         setState(() {
           _selectedImage = image;
+          _imageVersion++;
+          _isRecognizing = false;
+          _recognition = null;
+          _recognitionError = null;
           _error = null;
         });
       }
@@ -297,6 +325,255 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
         setState(() => _error = 'Không thể mở ảnh. Vui lòng thử lại.');
       }
     }
+  }
+
+  Future<void> _recognizeImage() async {
+    final image = _selectedImage;
+    if (image == null) return;
+    final version = _imageVersion;
+    setState(() {
+      _isRecognizing = true;
+      _recognition = null;
+      _recognitionError = null;
+    });
+    try {
+      final result = await widget.recognizer.recognize(image.path);
+      if (!mounted || version != _imageVersion) return;
+      setState(() => _recognition = result);
+    } on Object {
+      if (mounted && version == _imageVersion) {
+        setState(
+          () => _recognitionError =
+              'Không thể nhận diện ảnh trên thiết bị. Vui lòng chọn hãng và dòng xe thủ công.',
+        );
+      }
+    } finally {
+      if (mounted && version == _imageVersion) {
+        setState(() => _isRecognizing = false);
+      }
+    }
+  }
+
+  Future<void> _applyRecognition() async {
+    final suggestion = _recognition?.suggestion;
+    if (suggestion == null || !_recognition!.accepted) return;
+    final brand = _brands.where(
+      (item) => _sameCatalogName(item.name, suggestion.make),
+    );
+    if (brand.isEmpty) {
+      setState(
+        () => _recognitionError =
+            'Hãng ${suggestion.make} chưa có trong danh mục garage. Vui lòng chọn thủ công.',
+      );
+      return;
+    }
+    final version = _imageVersion;
+    final previousBrandId = _selectedBrandId;
+    final previousModelId = _selectedModelId;
+    setState(() => _isLoadingModels = true);
+    try {
+      final models = await widget.gateway.loadModels(brand.first.id);
+      if (!mounted ||
+          version != _imageVersion ||
+          previousBrandId != _selectedBrandId ||
+          previousModelId != _selectedModelId) {
+        return;
+      }
+      final matched = models.where(
+        (item) => _sameCatalogName(item.name, suggestion.model),
+      );
+      if (matched.isEmpty) {
+        setState(
+          () => _recognitionError =
+              'Dòng ${suggestion.model} chưa có trong danh mục garage. Vui lòng chọn thủ công.',
+        );
+        return;
+      }
+      setState(() {
+        _selectedBrandId = brand.first.id;
+        _models = models;
+        _selectedModelId = matched.first.id;
+        _catalogError = null;
+        _recognitionError = null;
+      });
+    } on VehicleException catch (error) {
+      if (mounted) setState(() => _recognitionError = error.message);
+    } finally {
+      if (mounted) setState(() => _isLoadingModels = false);
+    }
+  }
+
+  bool _sameCatalogName(String a, String b) =>
+      a.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '') ==
+      b.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+
+  Future<void> _scanTextFromPhoto(VehicleScanTarget target) async {
+    if (_isScanningText ||
+        _isSubmitting ||
+        (_isEditing && target == VehicleScanTarget.plate)) {
+      return;
+    }
+    setState(() {
+      _scanTarget = target;
+      _scanError = null;
+    });
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text('Quét ${_scanTargetLabel(target)}'),
+              subtitle: const Text(
+                'Chụp cận cảnh và đủ sáng để đọc rõ thông tin.',
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: const Text('Chụp ảnh trực tiếp'),
+              onTap: () => Navigator.pop(sheetContext, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Chọn ảnh từ thư viện'),
+              onTap: () => Navigator.pop(sheetContext, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (source == null || !mounted) return;
+    if (source == ImageSource.camera) {
+      final permission = await Permission.camera.request();
+      if (!permission.isGranted) {
+        if (mounted) await _showCameraPermissionDialog(permission);
+        return;
+      }
+    }
+
+    try {
+      final image = await _imagePicker.pickImage(
+        source: source,
+        imageQuality: 95,
+        maxWidth: 2560,
+        maxHeight: 2560,
+      );
+      if (image == null || !mounted) return;
+      setState(() {
+        _isScanningText = true;
+        _scanError = null;
+      });
+      final text = await widget.textRecognizer.recognize(image.path);
+      if (!mounted) return;
+      final result = extractVehicleText(text, target);
+      final details = <String>[
+        if (!_isEditing && result.plate != null) 'Biển số: ${result.plate}',
+        if (result.vin != null) 'Số khung / VIN: ${result.vin}',
+        if (result.odometer != null) 'ODO: ${result.odometer} km',
+        if (result.year != null) 'Năm sản xuất: ${result.year}',
+      ];
+      if (details.isEmpty) {
+        setState(
+          () => _scanError =
+              'Không đọc được thông tin phù hợp từ ảnh. Hãy chụp gần hơn hoặc nhập thủ công.',
+        );
+        return;
+      }
+      final approved = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Kiểm tra kết quả quét'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final detail in details) Text(detail),
+              const SizedBox(height: 12),
+              const Text(
+                'Hãy đối chiếu với ảnh gốc. Thông tin chỉ được lưu khi bạn bấm lưu xe.',
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Bỏ qua'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Điền vào form'),
+            ),
+          ],
+        ),
+      );
+      if (approved != true || !mounted) return;
+      setState(() {
+        if (!_isEditing && result.plate != null) _plate.text = result.plate!;
+        if (result.vin != null) _vin.text = result.vin!;
+        if (result.odometer != null) {
+          _odometer.text = result.odometer.toString();
+        }
+        if (result.year != null) _year.text = result.year.toString();
+        _scanError = null;
+      });
+    } on Object {
+      if (mounted) {
+        setState(
+          () => _scanError =
+              'Không thể đọc chữ trong ảnh trên thiết bị. Hãy thử lại hoặc nhập thủ công.',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isScanningText = false);
+    }
+  }
+
+  String _scanTargetLabel(VehicleScanTarget target) => switch (target) {
+    VehicleScanTarget.plate => 'biển số xe',
+    VehicleScanTarget.vin => 'số khung / VIN',
+    VehicleScanTarget.odometer => 'đồng hồ ODO',
+    VehicleScanTarget.registration => 'giấy đăng ký xe',
+    VehicleScanTarget.year => 'năm sản xuất',
+  };
+
+  Widget? _scanFieldAction(VehicleScanTarget target) {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return null;
+    final isCurrentTarget = _scanTarget == target;
+    final isReading = _isScanningText && isCurrentTarget;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        IconButton(
+          key: ValueKey('vehicle-text-scan-${target.name}'),
+          tooltip: _isEditing && target == VehicleScanTarget.plate
+              ? 'Biển số xe đã lưu không thể thay đổi'
+              : 'Chụp hoặc chọn ảnh ${_scanTargetLabel(target)}',
+          onPressed:
+              _isScanningText ||
+                  _isSubmitting ||
+                  (_isEditing && target == VehicleScanTarget.plate)
+              ? null
+              : () => _scanTextFromPhoto(target),
+          iconSize: 20,
+          color: AppColors.primaryContainer,
+          icon: isReading
+              ? const SizedBox.square(
+                  dimension: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.photo_camera_outlined),
+        ),
+        if (isCurrentTarget && _scanError != null)
+          Text(
+            _scanError!,
+            key: const ValueKey('vehicle-text-scan-error'),
+            style: const TextStyle(color: AppColors.danger, fontSize: 12),
+          ),
+      ],
+    );
   }
 
   Future<void> _showCameraPermissionDialog(PermissionStatus status) {
@@ -310,7 +587,7 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
         ),
         title: const Text('Cần quyền sử dụng camera'),
         content: const Text(
-          'AutoCare cần quyền camera để chụp ảnh xe hoặc giấy đăng kiểm. '
+          'AutoCare cần quyền camera để chụp ảnh xe, biển số, đồng hồ ODO hoặc số khung VIN. '
           'Bạn vẫn có thể chọn ảnh từ thư viện.',
         ),
         actions: [
@@ -464,6 +741,7 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
                     child: _VehicleFormField(
                       label: 'Biển số xe',
                       required: true,
+                      footer: _scanFieldAction(VehicleScanTarget.plate),
                       child: TextFormField(
                         key: const ValueKey('vehicle-license-plate-field'),
                         controller: _plate,
@@ -494,32 +772,39 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
                     child: _VehicleFormField(
                       label: 'Hãng xe',
                       required: true,
-                      child: DropdownButtonFormField<int>(
+                      child: SizedBox(
                         key: const ValueKey('vehicle-brand-field'),
-                        initialValue: _selectedBrandId,
-                        isExpanded: true,
-                        decoration: _fieldDecoration(
-                          hintText: _isLoadingBrands
-                              ? 'Đang tải hãng xe...'
-                              : 'Chọn hãng xe',
-                        ),
-                        items: _brands
-                            .map(
-                              (brand) => DropdownMenuItem<int>(
-                                value: brand.id,
-                                child: Text(
-                                  brand.name,
-                                  overflow: TextOverflow.ellipsis,
+                        child: DropdownButtonFormField<int>(
+                          key: ValueKey(
+                            'vehicle-brand-dropdown-${_selectedBrandId ?? 0}',
+                          ),
+                          initialValue: _selectedBrandId,
+                          isExpanded: true,
+                          decoration: _fieldDecoration(
+                            hintText: _isLoadingBrands
+                                ? 'Đang tải hãng xe...'
+                                : 'Chọn hãng xe',
+                          ),
+                          items: _brands
+                              .map(
+                                (brand) => DropdownMenuItem<int>(
+                                  value: brand.id,
+                                  child: Text(
+                                    brand.name,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
-                              ),
-                            )
-                            .toList(growable: false),
-                        onChanged:
-                            _isSubmitting || _isLoadingBrands || _brands.isEmpty
-                            ? null
-                            : _selectBrand,
-                        validator: (value) =>
-                            value == null ? 'Vui lòng chọn hãng xe.' : null,
+                              )
+                              .toList(growable: false),
+                          onChanged:
+                              _isSubmitting ||
+                                  _isLoadingBrands ||
+                                  _brands.isEmpty
+                              ? null
+                              : _selectBrand,
+                          validator: (value) =>
+                              value == null ? 'Vui lòng chọn hãng xe.' : null,
+                        ),
                       ),
                     ),
                   ),
@@ -614,6 +899,7 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
                   Expanded(
                     child: _VehicleFormField(
                       label: 'Số ODO hiện tại',
+                      footer: _scanFieldAction(VehicleScanTarget.odometer),
                       child: TextFormField(
                         controller: _odometer,
                         enabled: !_isSubmitting,
@@ -637,6 +923,7 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
                     child: _VehicleFormField(
                       label: 'Số khung / VIN',
                       optional: true,
+                      footer: _scanFieldAction(VehicleScanTarget.vin),
                       child: TextFormField(
                         controller: _vin,
                         enabled: !_isSubmitting,
@@ -663,15 +950,66 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
               ),
               const SizedBox(height: 14),
               _VehicleFormField(
-                label: 'Ảnh xe hoặc Giấy đăng kiểm',
+                label: 'Ảnh xe',
                 optional: true,
                 child: _VehicleImagePlaceholder(
                   enabled: !_isSubmitting,
                   selectedImage: _selectedImage,
                   onTap: _chooseImageSource,
-                  onRemove: () => setState(() => _selectedImage = null),
+                  onRemove: () => setState(() {
+                    _selectedImage = null;
+                    _imageVersion++;
+                    _isRecognizing = false;
+                    _recognition = null;
+                    _recognitionError = null;
+                  }),
                 ),
               ),
+              if (_selectedImage != null) ...[
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  key: const ValueKey('vehicle-autovision-recognize'),
+                  onPressed: _isRecognizing || _isSubmitting
+                      ? null
+                      : _recognizeImage,
+                  icon: _isRecognizing
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.auto_awesome_outlined),
+                  label: Text(
+                    _isRecognizing
+                        ? 'Đang nhận diện...'
+                        : 'Nhận diện hãng và dòng từ ảnh xe',
+                  ),
+                ),
+              ],
+              if (_recognition != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  _recognition!.accepted
+                      ? 'Thông tin xe nhận diện được: ${_recognition!.suggestion!.make} ${_recognition!.suggestion!.model}. Hãy kiểm tra trước khi áp dụng.'
+                      : 'AutoVision chưa xác định được hãng và dòng xe từ ảnh này. Hãy chụp rõ toàn xe hoặc chọn thủ công.',
+                  key: const ValueKey('vehicle-autovision-result'),
+                ),
+                if (_recognition!.accepted)
+                  TextButton(
+                    key: const ValueKey('vehicle-autovision-apply'),
+                    onPressed:
+                        _isLoadingBrands || _isLoadingModels || _isSubmitting
+                        ? null
+                        : _applyRecognition,
+                    child: const Text('Áp dụng thông tin hãng và dòng xe'),
+                  ),
+              ],
+              if (_recognitionError != null)
+                Text(
+                  _recognitionError!,
+                  key: const ValueKey('vehicle-autovision-error'),
+                  style: const TextStyle(color: AppColors.danger),
+                ),
               if (_error != null) ...[
                 const SizedBox(height: 14),
                 Container(
@@ -695,7 +1033,11 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
               const SizedBox(height: 16),
               FilledButton.icon(
                 key: const ValueKey('vehicle-submit-button'),
-                onPressed: _isSubmitting || _isLoadingBrands || _isLoadingModels
+                onPressed:
+                    _isSubmitting ||
+                        _isScanningText ||
+                        _isLoadingBrands ||
+                        _isLoadingModels
                     ? null
                     : _submit,
                 style: FilledButton.styleFrom(
@@ -762,12 +1104,14 @@ class _VehicleFormField extends StatelessWidget {
   const _VehicleFormField({
     required this.label,
     required this.child,
+    this.footer,
     this.required = false,
     this.optional = false,
   });
 
   final String label;
   final Widget child;
+  final Widget? footer;
   final bool required;
   final bool optional;
 
@@ -803,6 +1147,8 @@ class _VehicleFormField extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         child,
+        if (footer != null)
+          Align(alignment: Alignment.centerRight, child: footer!),
       ],
     );
   }
@@ -914,7 +1260,7 @@ class _VehicleImagePlaceholder extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Chụp ảnh hoặc chọn file',
+                              'Chụp hoặc chọn ảnh xe',
                               style: TextStyle(
                                 color: Color(0xFF1E293B),
                                 fontSize: 12,

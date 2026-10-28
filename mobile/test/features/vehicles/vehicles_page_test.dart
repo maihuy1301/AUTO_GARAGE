@@ -129,7 +129,7 @@ void main() {
       find.byKey(const ValueKey('vehicle-license-plate-field')),
       findsOneWidget,
     );
-    expect(find.text('Ảnh xe hoặc Giấy đăng kiểm (Tùy chọn)'), findsOneWidget);
+    expect(find.text('Ảnh xe (Tùy chọn)'), findsOneWidget);
     expect(
       find.byKey(const ValueKey('vehicle-image-placeholder')),
       findsOneWidget,
@@ -140,7 +140,7 @@ void main() {
     );
     await tester.tap(find.byKey(const ValueKey('vehicle-image-placeholder')));
     await tester.pumpAndSettle();
-    expect(find.text('Thêm ảnh hồ sơ xe'), findsOneWidget);
+    expect(find.text('Thêm ảnh xe'), findsOneWidget);
     expect(find.text('Chụp ảnh'), findsOneWidget);
     expect(find.text('Chọn từ thư viện'), findsOneWidget);
     await tester.binding.handlePopRoute();
@@ -190,6 +190,58 @@ void main() {
     expect(navigation.destinations, hasLength(5));
     expect(navigation.selectedIndex, 4);
     expect(find.text('Tài khoản'), findsOneWidget);
+  });
+
+  testWidgets('camera của từng trường mở chọn nguồn ảnh đúng mục', (
+    tester,
+  ) async {
+    final gateway = _FakeVehicleGateway();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: VehiclesPage(gateway: gateway)),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('vehicles-empty-add-button')));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const ValueKey('vehicle-text-scan-button')),
+      findsNothing,
+    );
+    for (final entry in {
+      'plate': 'biển số xe',
+      'odometer': 'đồng hồ ODO',
+      'vin': 'số khung / VIN',
+    }.entries) {
+      final camera = find.byKey(ValueKey('vehicle-text-scan-${entry.key}'));
+      await tester.ensureVisible(camera);
+      await tester.tap(camera);
+      await tester.pumpAndSettle();
+      expect(find.text('Quét ${entry.value}'), findsOneWidget);
+      expect(find.text('Chụp ảnh trực tiếp'), findsOneWidget);
+      expect(find.text('Chọn ảnh từ thư viện'), findsOneWidget);
+      expect(find.text('Chọn thông tin cần quét'), findsNothing);
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+    }
+    expect(find.byKey(const ValueKey('vehicle-text-scan-year')), findsNothing);
+    expect(gateway.createCalls, 0);
+    expect(gateway.updatedId, isNull);
+  });
+
+  testWidgets('xe đã lưu khóa quét biển số và vẫn cho quét ODO, VIN', (
+    tester,
+  ) async {
+    final gateway = _FakeVehicleGateway()..vehicles = [existingVehicle];
+    await openEditor(tester, gateway);
+    for (final target in ['plate', 'odometer', 'vin']) {
+      final camera = tester.widget<IconButton>(
+        find.byKey(ValueKey('vehicle-text-scan-$target')),
+      );
+      expect(camera.onPressed, target == 'plate' ? isNull : isNotNull);
+    }
+    expect(gateway.updatedId, isNull);
   });
 }
 

@@ -1,5 +1,9 @@
 # Garage Management System (Hệ Thống Quản Lý Garage Ô Tô Đa Chi Nhánh)
 
+## Quét thông tin xe trên Android — 26/10/2026
+
+Form xe CUSTOMER giữ AutoVision để gợi ý hãng/dòng từ ảnh toàn xe. Trên Android, biểu tượng máy ảnh bên dưới góc phải của từng trường biển số, ODO và VIN cho chụp/chọn ảnh riêng để OCR trên thiết bị; đã bỏ nút quét chung và menu chọn loại thông tin. Năm sản xuất nhập thủ công. Người dùng kiểm tra kết quả rồi mới điền form; chỉ nút lưu xe mới gửi dữ liệu qua backend vào bảng `Xe`. Không đổi schema/API và không tải ảnh quét OCR lên backend. Xem [hướng dẫn AutoVision và OCR](docs/AUTOVISION_MOBILE_INTEGRATION.md). Chưa xác minh OCR native trên điện thoại thật.
+
 ## Việt hóa bảng chat hỗ trợ — 11/10/2026
 
 - Đã áp `V08__support_chat_vietnamese_names.sql` vào SQL Server Docker local: `SupportConversation` → `HoiThoaiHoTro`, `SupportMessage` → `TinNhanHoTro`, `SupportReadCursor` → `TrangThaiDocHoTro`; đổi 19 tên cột theo đề xuất.

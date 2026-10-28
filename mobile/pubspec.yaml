@@ -44,6 +44,9 @@ dependencies:
   firebase_core: ^4.15.0
   firebase_messaging: ^16.7.0
   geolocator: ^14.0.2
+  image: ^4.9.2
+  tflite_flutter: ^0.12.1
+  google_mlkit_text_recognition: ^0.16.0
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +78,11 @@ flutter:
   assets:
     - asset/screen.png
     - asset/home_autocare_car.png
+    - asset/autovision/car_classifier.tflite
+    - asset/autovision/class_mapping.json
+    - asset/autovision/model_manifest.json
+    - asset/autovision/confusion_pairs.json
+    - asset/autovision/LICENSE
 
   # To add assets to your application, add an assets section, like this:
   # assets:
