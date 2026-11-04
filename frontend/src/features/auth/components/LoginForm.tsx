@@ -59,7 +59,7 @@ export const LoginForm: React.FC = () => {
         label="Tên đăng nhập / Email"
         id="username-input"
         type="text"
-        placeholder="admin, manager, technician, receptionist, customer..."
+        placeholder="admin, manager, frontdesk..."
         leftIcon="mail"
         value={tenDangNhap}
         onChange={(e) => setTenDangNhap(e.target.value)}
@@ -185,8 +185,6 @@ export const LoginForm: React.FC = () => {
             { label: 'Admin', u: 'admin' },
             { label: 'Manager (CN001)', u: 'manager' },
             { label: 'Frontdesk', u: 'frontdesk' },
-            { label: 'Technician', u: 'technician' },
-            { label: 'Customer', u: 'customer' },
           ].map((acc) => (
             <button
               key={acc.u}

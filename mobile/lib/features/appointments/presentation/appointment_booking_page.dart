@@ -595,7 +595,7 @@ class _AppointmentBookingPageState extends State<AppointmentBookingPage> {
                       const Expanded(
                         child: _SectionTitle(
                           icon: Icons.miscellaneous_services_rounded,
-                          title: 'Dịch vụ muốn thực hiện',
+                          title: 'Đặt dịch vụ',
                         ),
                       ),
                       Container(
@@ -1950,7 +1950,7 @@ class _ServiceOptionTile extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              '💰 Tổng dự kiến (Công + Phụ tùng):',
+                              '💰 Tổng dự kiến:',
                               style: theme.textTheme.bodySmall?.copyWith(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 11,
