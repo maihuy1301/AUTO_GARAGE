@@ -94,7 +94,7 @@ function SupportChatSession() {
   };
   const clearChat = async () => {
     if (!room || busy) return;
-    if (!window.confirm('Bạn có chắc chắn muốn xóa toàn bộ tin nhắn cuộc trò chuyện này để làm sạch hàng chờ?')) return;
+    if (!window.confirm('Xóa toàn bộ tin nhắn trong cuộc trò chuyện này?')) return;
     setBusy(true); setError('');
     try { await supportChat.clear(room.id); setMessages([]); setMore(false); await refresh(); }
     catch (e) { if (alive.current) setError(errorText(e)); }
@@ -122,9 +122,9 @@ function SupportChatSession() {
     } catch (e) { if (alive.current) setError(errorText(e)); }
     finally { if (alive.current) setBusy(false); }
   };
-  if (enabled === false) return <div className="support-empty"><h2>Chat hỗ trợ khách hàng</h2><p>Tính năng đang được chuẩn bị. Bạn vẫn có thể quản lý lịch hẹn tại mục Lịch hẹn.</p></div>;
+  if (enabled === false) return <div className="support-empty"><h2>Chat hỗ trợ khách hàng</h2><p>Chat hỗ trợ hiện chưa được bật. Bạn vẫn có thể xem và xử lý lịch hẹn tại mục Lịch hẹn.</p></div>;
   return <section className="support-page">
-    <header className="support-title"><div><h1>Hỗ trợ khách hàng</h1><p>Tư vấn dịch vụ và đồng hành cùng khách đặt lịch</p></div><span>{connected ? '● Đã kết nối' : '○ Đang kết nối lại'}</span></header>
+    <header className="support-title"><div><h1>Hỗ trợ khách hàng</h1><p>Trả lời câu hỏi về dịch vụ và hỗ trợ khách đặt lịch</p></div><span>{connected ? '● Đã kết nối' : '○ Đang kết nối lại'}</span></header>
     {error && <div role="alert" className="support-error">{error} <button onClick={() => { setError(''); if (enabled === null) supportChat.enabled().then(setEnabled).catch(e => setError(errorText(e))); else void refresh(); }}>Thử lại</button></div>}
     <div className="support-layout">
       <aside className="support-list">
@@ -143,7 +143,7 @@ function SupportChatSession() {
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               {room.status === 'WAITING' && <button className="support-primary" disabled={busy} onClick={() => void action('claim')}>Nhận hỗ trợ</button>}
               {room.agentId === user?.maNguoiDung && room.status === 'HUMAN' && <button disabled={busy} onClick={() => void action('resolve')}>Kết thúc hỗ trợ</button>}
-              <button className="support-danger" disabled={busy} onClick={() => void clearChat()} title="Xóa toàn bộ tin nhắn làm sạch hàng chờ">Xóa trò chuyện</button>
+              <button className="support-danger" disabled={busy} onClick={() => void clearChat()} title="Xóa toàn bộ tin nhắn trong cuộc trò chuyện">Xóa trò chuyện</button>
             </div>
           </header>
           <div className="support-messages" aria-live="polite">

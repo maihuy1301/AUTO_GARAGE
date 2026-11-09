@@ -40,7 +40,7 @@ export const UnauthorizedPage: React.FC = () => {
         403 — Không có quyền truy cập
       </h2>
       <p style={{ color: 'var(--text-secondary)', maxWidth: '440px', marginBottom: '24px', fontSize: '0.95rem' }}>
-        Tài khoản của bạn không có vai trò hoặc quyền hạn phù hợp để truy cập chức năng này.
+        Bạn chưa được cấp quyền sử dụng chức năng này. Liên hệ quản trị viên nếu cần hỗ trợ.
       </p>
 
       <Button variant="primary" onClick={() => navigate('/app/dashboard')}>

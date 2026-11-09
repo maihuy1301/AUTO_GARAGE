@@ -43,7 +43,7 @@ export const BranchesPage: React.FC = () => {
       if (err && typeof err === 'object' && 'message' in err) {
         setError((err as { message: string }).message);
       } else {
-        setError('Không thể tải danh sách chi nhánh. Vui lòng kiểm tra lại kết nối máy chủ.');
+        setError('Không tải được danh sách chi nhánh. Vui lòng thử lại.');
       }
     } finally {
       setIsLoading(false);
@@ -127,7 +127,7 @@ export const BranchesPage: React.FC = () => {
             Quản lý Chi nhánh
           </h1>
           <p className="page-subtitle" style={{ margin: '4px 0 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Hệ thống mạng lưới garage đa chi nhánh & cơ sở dịch vụ {lastUpdated && `• Cập nhật lúc ${lastUpdated}`}
+            Thông tin liên hệ và trạng thái hoạt động của các chi nhánh {lastUpdated && `• Cập nhật lúc ${lastUpdated}`}
           </p>
         </div>
 

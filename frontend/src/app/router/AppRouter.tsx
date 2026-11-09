@@ -4,7 +4,6 @@ import { LoginPage } from '@/pages/LoginPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { UnauthorizedPage } from '@/pages/UnauthorizedPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
-import { PlaceholderPage } from '@/pages/PlaceholderPage';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RoleGuard } from './RoleGuard';
@@ -66,14 +65,6 @@ export const AppRouter: React.FC = () => {
             </RoleGuard>
           }
         />
-        <Route
-          path="settings"
-          element={
-            <RoleGuard roles={['ROLE_ADMIN']}>
-              <PlaceholderPage moduleName="Cài đặt hệ thống" taskNumber="Frontend Task Cài đặt" />
-            </RoleGuard>
-          }
-        />
 
         {/* Manager & Admin routes */}
         <Route
@@ -97,14 +88,6 @@ export const AppRouter: React.FC = () => {
           element={
             <RoleGuard roles={['ROLE_ADMIN', 'ROLE_MANAGER']}>
               <InventoryPage />
-            </RoleGuard>
-          }
-        />
-        <Route
-          path="quotations"
-          element={
-            <RoleGuard roles={['ROLE_ADMIN', 'ROLE_MANAGER']}>
-              <PlaceholderPage moduleName="Báo giá dịch vụ" taskNumber="Frontend Task Báo giá" />
             </RoleGuard>
           }
         />
@@ -135,21 +118,11 @@ export const AppRouter: React.FC = () => {
           }
         />
 
-        {/* Technician specific */}
-        <Route
-          path="execution"
-          element={
-            <RoleGuard roles={['ROLE_ADMIN', 'ROLE_TECHNICIAN']}>
-              <PlaceholderPage moduleName="Tiến độ thực hiện & sửa chữa" taskNumber="Frontend Task Tiến độ" />
-            </RoleGuard>
-          }
-        />
-
         {/* Common protected business routes */}
         <Route
           path="appointments"
           element={
-            <RoleGuard roles={['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK', 'ROLE_CUSTOMER']}>
+            <RoleGuard roles={['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK']}>
               <AppointmentsPage />
             </RoleGuard>
           }
@@ -157,7 +130,7 @@ export const AppRouter: React.FC = () => {
         <Route
           path="repair-orders"
           element={
-            <RoleGuard roles={['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK', 'ROLE_TECHNICIAN']}>
+            <RoleGuard roles={['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK']}>
               <RepairOrdersPage />
             </RoleGuard>
           }
@@ -165,7 +138,7 @@ export const AppRouter: React.FC = () => {
         <Route
           path="vehicles"
           element={
-            <RoleGuard roles={['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_CUSTOMER']}>
+            <RoleGuard roles={['ROLE_ADMIN', 'ROLE_MANAGER']}>
               <VehiclesPage />
             </RoleGuard>
           }
@@ -181,14 +154,10 @@ export const AppRouter: React.FC = () => {
         <Route
           path="invoices"
           element={
-            <RoleGuard roles={['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK', 'ROLE_CUSTOMER']}>
+            <RoleGuard roles={['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK']}>
               <InvoicesPage />
             </RoleGuard>
           }
-        />
-        <Route
-          path="notifications"
-          element={<PlaceholderPage moduleName="Thông báo hệ thống" taskNumber="Frontend Task Thông báo" />}
         />
         <Route
           path="chat"

@@ -83,7 +83,7 @@ export const CustomerStatusModal: React.FC<CustomerStatusModalProps> = ({
                 marginTop: '12px',
               }}
             >
-              Lưu ý: Khách hàng khi bị khóa sẽ không thể đăng nhập đặt lịch hẹn hoặc xem thông tin bảo dưỡng trên ứng dụng.
+              Khách hàng bị khóa sẽ không thể đăng nhập để đặt lịch hoặc xem thông tin bảo dưỡng.
             </p>
           )}
         </div>

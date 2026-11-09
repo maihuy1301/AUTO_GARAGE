@@ -2,6 +2,7 @@ import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse, AxiosE
 import { ENV } from '@/app/config/env';
 import { tokenStorage } from '@/lib/auth/token-storage';
 import { normalizeApiError, triggerUnauthorized } from './error-handler';
+import { API_ENDPOINTS } from './endpoints';
 
 export const apiClient: AxiosInstance = axios.create({
   baseURL: ENV.API_BASE_URL,
@@ -28,7 +29,7 @@ apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      const isLoginRequest = error.config?.url?.includes('/auth/login');
+      const isLoginRequest = error.config?.url === API_ENDPOINTS.AUTH.LOGIN;
       if (!isLoginRequest) {
         triggerUnauthorized();
       }

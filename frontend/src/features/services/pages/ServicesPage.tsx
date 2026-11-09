@@ -175,7 +175,7 @@ export const ServicesPage: React.FC = () => {
             Danh Mục Dịch Vụ & Giá Công
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>
-            Quản lý các dịch vụ sửa chữa, bảo dưỡng, định mức phụ tùng và bảng giá công chuẩn toàn hệ thống
+            Cập nhật dịch vụ, giá tiền công và phụ tùng định mức
           </p>
         </div>
 
@@ -326,7 +326,7 @@ export const ServicesPage: React.FC = () => {
           <div style={{ padding: '32px 0' }}>
             <EmptyState
               title="Không tìm thấy dịch vụ nào"
-              description="Không có dịch vụ nào khớp với từ khóa tìm kiếm hoặc điều kiện lọc hiện tại."
+              description="Không có dịch vụ phù hợp. Thử đổi từ khóa hoặc bộ lọc."
             />
           </div>
         ) : (

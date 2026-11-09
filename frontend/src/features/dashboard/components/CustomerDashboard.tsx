@@ -103,10 +103,10 @@ export const CustomerDashboard: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-on-surface)' }}>
-            Trung Tâm Khách Hàng (Customer Portal)
+            Xe và lịch hẹn của tôi
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>
-            Quản lý phương tiện cá nhân, đặt lịch bảo dưỡng và theo dõi tiến độ sửa chữa xe.
+            Xem xe đã đăng ký, đặt lịch bảo dưỡng và theo dõi sửa chữa.
           </p>
         </div>
 
@@ -180,7 +180,7 @@ export const CustomerDashboard: React.FC = () => {
           {vehicles.length === 0 ? (
             <EmptyState
               title="Chưa có xe đăng ký"
-              description="Bạn chưa thêm phương tiện nào vào hệ thống."
+              description="Bạn chưa thêm xe nào."
             />
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>

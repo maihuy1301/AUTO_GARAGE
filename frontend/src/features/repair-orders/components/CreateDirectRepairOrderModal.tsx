@@ -404,10 +404,10 @@ export const CreateDirectRepairOrderModal: React.FC<CreateDirectRepairOrderModal
               <span className="material-symbols-outlined" style={{ color: 'var(--color-primary)' }}>
                 playlist_add_circle
               </span>
-              Tạo Lệnh Sửa Chữa Chủ Động / Phiếu Phát Sinh
+              Tạo lệnh sửa chữa / phiếu phát sinh
             </h3>
             <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--color-outline)' }}>
-              Tạo lệnh sửa chữa độc lập cho khách vãng lai hoặc lập nhanh phiếu phát sinh từ phiếu sửa chữa có sẵn
+              Tạo lệnh cho khách vãng lai hoặc lập phiếu phát sinh từ lệnh sửa chữa đã có
             </p>
           </div>
           <button className="modal-close-btn" onClick={onClose} type="button" aria-label="Đóng">
@@ -445,11 +445,11 @@ export const CreateDirectRepairOrderModal: React.FC<CreateDirectRepairOrderModal
                     bolt
                   </span>
                   <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--color-primary)' }}>
-                    Lập Nhanh Phiếu Phát Sinh Từ Phiếu Cha (Tùy chọn)
+                    Lập phiếu phát sinh từ lệnh có sẵn (không bắt buộc)
                   </span>
                 </div>
                 <span style={{ fontSize: '0.8rem', color: 'var(--color-outline)' }}>
-                  Chọn phiếu cha để tự động điền Khách hàng, Xe & Hiện trạng (Các phiếu đã xuất hóa đơn sẽ bị khóa)
+                  Chọn lệnh gốc để điền sẵn khách hàng, xe và tình trạng xe. Không chọn được lệnh đã xuất hóa đơn.
                 </span>
               </div>
 
@@ -642,7 +642,7 @@ export const CreateDirectRepairOrderModal: React.FC<CreateDirectRepairOrderModal
             {/* Customer Request */}
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="form-label" htmlFor="direct-ro-request">
-                Yêu cầu của khách hàng / Hiện trạng tiếp nhận phát sinh
+                Yêu cầu của khách hàng / Tình trạng xe
               </label>
               <input
                 id="direct-ro-request"
@@ -658,7 +658,7 @@ export const CreateDirectRepairOrderModal: React.FC<CreateDirectRepairOrderModal
             {/* Ghi chú */}
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="form-label" htmlFor="direct-ro-note">
-                Ghi chú nội bộ / Chỉ đạo sửa chữa
+                Ghi chú sửa chữa
               </label>
               <textarea
                 id="direct-ro-note"
@@ -930,7 +930,7 @@ export const CreateDirectRepairOrderModal: React.FC<CreateDirectRepairOrderModal
                   info
                 </span>
                 <span>
-                  <strong>Lưu ý nghiệp vụ kho:</strong> Phụ tùng định mức kèm theo các dịch vụ trên sẽ được tạo dưới dạng danh mục dự kiến. Tồn kho thực tế <strong>chưa bị trừ</strong> cho đến khi kỹ thuật viên thực hiện xuất kho trong quá trình sửa chữa.
+                  <strong>Phụ tùng dự kiến:</strong> Phụ tùng đi kèm dịch vụ được đưa vào danh sách dự kiến. Tồn kho <strong>chưa bị trừ</strong> cho đến khi kỹ thuật viên xuất phụ tùng để sửa chữa.
                 </span>
               </div>
             </div>

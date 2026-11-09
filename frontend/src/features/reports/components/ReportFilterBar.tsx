@@ -157,7 +157,7 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
                 minWidth: '200px',
               }}
             >
-              <option value="">🏢 Tất cả chi nhánh (Toàn chuỗi)</option>
+              <option value="">Tất cả chi nhánh</option>
               {branches.map((b) => (
                 <option key={b.maChiNhanh} value={String(b.maChiNhanh)}>
                   {b.tenChiNhanh}

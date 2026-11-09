@@ -246,7 +246,7 @@ export const ReportKpiCards: React.FC<ReportKpiCardsProps> = ({
               color: 'var(--color-outline)',
             }}
           >
-            Lệnh Sửa Chữa (RO)
+            Lệnh sửa chữa
           </span>
           <div
             style={{
@@ -389,11 +389,11 @@ export const ReportKpiCards: React.FC<ReportKpiCardsProps> = ({
               <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
                 warning
               </span>
-              Cần nhập hàng gấp
+              Cần kiểm tra và nhập bổ sung
             </span>
           ) : (
             <span style={{ color: 'var(--color-success)', fontWeight: 600 }}>
-              ✓ Mức tồn kho ổn định
+              Không có cảnh báo tồn kho
             </span>
           )}
         </div>

@@ -13,7 +13,7 @@ export const LoginForm: React.FC = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { login } = useAuth();
+  const { login, error: authError } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -44,7 +44,7 @@ export const LoginForm: React.FC = () => {
       if (err && typeof err === 'object' && 'message' in err) {
         setFormError((err as { message: string }).message);
       } else {
-        setFormError('Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng hoặc máy chủ Backend.');
+        setFormError('Không kết nối được với máy chủ. Kiểm tra mạng và thử lại.');
       }
     } finally {
       setIsSubmitting(false);
@@ -53,7 +53,7 @@ export const LoginForm: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="login-form">
-      <ErrorMessage message={formError} />
+      <ErrorMessage message={formError || authError} />
 
       <Input
         label="Tên đăng nhập / Email"
@@ -138,7 +138,7 @@ export const LoginForm: React.FC = () => {
           href="#forgot"
           onClick={(e) => {
             e.preventDefault();
-            alert('Vui lòng liên hệ Quản trị viên (ROLE_ADMIN) để đặt lại mật khẩu.');
+            alert('Liên hệ quản trị viên để đặt lại mật khẩu.');
           }}
           style={{
             color: 'var(--color-primary-container)',

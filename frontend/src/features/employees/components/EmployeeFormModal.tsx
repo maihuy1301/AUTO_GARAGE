@@ -229,7 +229,7 @@ export const EmployeeFormModal: React.FC<EmployeeFormModalProps> = ({
                       color: 'var(--color-outline)',
                     }}
                   >
-                    Không có tài khoản nhân sự khả dụng (Cần tạo tài khoản với vai trò Lễ tân hoặc Kỹ thuật viên trước).
+                    Chưa có tài khoản để liên kết. Hãy tạo tài khoản Lễ tân hoặc Kỹ thuật viên trước.
                   </div>
                 )}
                 {fieldErrors.maNguoiDung && (
@@ -262,7 +262,7 @@ export const EmployeeFormModal: React.FC<EmployeeFormModalProps> = ({
                 </select>
                 {!isSystemAdmin && (
                   <span style={{ fontSize: '0.75rem', color: 'var(--color-outline)', marginTop: '2px' }}>
-                    Quản lý chi nhánh chỉ được quản lý nhân viên thuộc chi nhánh hiện tại.
+                    Bạn chỉ có thể thêm hoặc sửa nhân viên trong chi nhánh mình phụ trách.
                   </span>
                 )}
                 {fieldErrors.maChiNhanh && (

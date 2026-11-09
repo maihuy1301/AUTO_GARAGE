@@ -128,9 +128,9 @@ export const AssignTechnicianModal: React.FC<AssignTechnicianModalProps> = ({
                   info
                 </span>
                 <div style={{ fontSize: '0.85rem', lineHeight: '1.4' }}>
-                  <strong>Quy trình phân công Lễ tân:</strong> Phân công sẽ ở trạng thái{' '}
+                  <strong>Lễ tân phân công:</strong> Phân công sẽ ở trạng thái{' '}
                   <span className="status-badge warning" style={{ padding: '2px 6px', fontSize: '0.75rem' }}>
-                    Chờ duyệt (CHO_DUYET)
+                    Chờ duyệt
                   </span>
                   . Sau khi <strong>Quản lý chi nhánh phê duyệt</strong>, Kỹ thuật viên mới thấy công việc.
                 </div>
@@ -141,9 +141,9 @@ export const AssignTechnicianModal: React.FC<AssignTechnicianModalProps> = ({
                   verified
                 </span>
                 <div style={{ fontSize: '0.85rem', lineHeight: '1.4' }}>
-                  <strong>Quy trình phân công Quản lý:</strong> Phân công sẽ được{' '}
+                  <strong>Quản lý phân công:</strong> Phân công sẽ được{' '}
                   <span className="status-badge success" style={{ padding: '2px 6px', fontSize: '0.75rem' }}>
-                    Tự động duyệt (DA_DUYET)
+                    Duyệt ngay
                   </span>{' '}
                   và hiển thị ngay cho Kỹ thuật viên.
                 </div>

@@ -76,7 +76,7 @@ export const ReceptionTable: React.FC<ReceptionTableProps> = ({
           Không có phiếu tiếp nhận nào
         </h4>
         <p style={{ margin: 0, color: 'var(--color-outline)', fontSize: '0.875rem' }}>
-          Hiện chưa có phiếu tiếp nhận xe nào phù hợp với bộ lọc tìm kiếm.
+          Không có phiếu tiếp nhận phù hợp. Thử đổi từ khóa hoặc bộ lọc.
         </p>
       </div>
     );

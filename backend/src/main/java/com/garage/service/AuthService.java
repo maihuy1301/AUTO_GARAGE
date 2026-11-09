@@ -10,6 +10,7 @@ import com.garage.entity.NguoiDungVaiTro;
 import com.garage.entity.VaiTro;
 import com.garage.exception.DuplicateResourceException;
 import com.garage.exception.ResourceNotFoundException;
+import com.garage.exception.WebAccessDeniedException;
 import com.garage.repository.KhachHangRepository;
 import com.garage.repository.NguoiDungRepository;
 import com.garage.repository.NguoiDungVaiTroRepository;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
@@ -50,6 +52,26 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest request) {
+        return authenticate(request, false);
+    }
+
+    public LoginResponse loginWeb(LoginRequest request) {
+        return authenticate(request, true);
+    }
+
+    public void validateWebAccess(Collection<String> roles) {
+        List<String> normalized = roles.stream()
+                .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
+                .toList();
+        boolean mobileRole = normalized.contains("ROLE_CUSTOMER") || normalized.contains("ROLE_TECHNICIAN");
+        boolean webRole = normalized.contains("ROLE_ADMIN") || normalized.contains("ROLE_MANAGER")
+                || normalized.contains("ROLE_FRONT_DESK");
+        if (mobileRole || !webRole) {
+            throw new WebAccessDeniedException();
+        }
+    }
+
+    private LoginResponse authenticate(LoginRequest request, boolean webLogin) {
         String identifier = request.getTenDangNhap().trim();
         NguoiDung nguoiDung = nguoiDungRepository.findByTenDangNhapOrEmail(identifier, identifier)
                 .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
@@ -66,6 +88,10 @@ public class AuthService {
         List<String> roleNames = userRoles.stream()
                 .map(vr -> vr.getVaiTro().getTenVaiTro())
                 .collect(Collectors.toList());
+
+        if (webLogin) {
+            validateWebAccess(roleNames);
+        }
 
         String token = jwtService.generateToken(nguoiDung.getTenDangNhap(), roleNames);
         return new LoginResponse(

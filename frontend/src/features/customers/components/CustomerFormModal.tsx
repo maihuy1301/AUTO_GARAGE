@@ -197,7 +197,7 @@ export const CustomerFormModal: React.FC<CustomerFormModalProps> = ({
                       color: 'var(--color-outline)',
                     }}
                   >
-                    Không có tài khoản Khách hàng khả dụng (Cần tạo tài khoản với vai trò Khách hàng trước).
+                    Chưa có tài khoản để liên kết. Hãy tạo tài khoản Khách hàng trước.
                   </div>
                 )}
                 {fieldErrors.maNguoiDung && (

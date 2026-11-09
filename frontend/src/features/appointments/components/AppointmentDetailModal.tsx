@@ -307,7 +307,7 @@ export const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({
                 <span className="material-symbols-outlined" style={{ fontSize: '20px', verticalAlign: 'middle', marginRight: '6px' }}>
                   sync
                 </span>
-                Đang nạp bảng giá dịch vụ & phụ tùng...
+                Đang tải giá dịch vụ và phụ tùng...
               </div>
             ) : currentAppointment.dichVu && currentAppointment.dichVu.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -484,7 +484,7 @@ export const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({
                         TỔNG CHI PHÍ DỰ KIẾN:
                       </span>
                       <div style={{ fontSize: '0.75rem', color: 'var(--color-outline)', marginTop: '2px' }}>
-                        * Giá mang tính chất dự kiến, chưa bao gồm phát sinh thực tế khi kiểm tra xe
+                        Giá dự kiến chưa bao gồm chi phí phát sinh sau khi kiểm tra xe.
                       </div>
                     </div>
                     <span
@@ -515,7 +515,7 @@ export const AppointmentDetailModal: React.FC<AppointmentDetailModalProps> = ({
                   info
                 </span>
                 <div style={{ fontSize: '0.85rem', color: 'var(--color-on-surface-variant)' }}>
-                  Khách hàng chưa chọn gói dịch vụ cụ thể trên hệ thống. Tiếp tân vui lòng kiểm tra ghi chú yêu cầu bên dưới để tư vấn và kiểm tra xe khi tiếp nhận.
+                  Khách chưa chọn dịch vụ. Hãy xem ghi chú bên dưới để tư vấn khi tiếp nhận xe.
                 </div>
               </div>
             )}

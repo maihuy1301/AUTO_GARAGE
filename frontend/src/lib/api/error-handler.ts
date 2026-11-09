@@ -25,7 +25,7 @@ export function normalizeApiError(error: unknown): ApiError {
     if (!axiosError.response) {
       return {
         status: 0,
-        message: 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng hoặc máy chủ Backend.',
+        message: 'Không kết nối được với máy chủ. Kiểm tra mạng và thử lại.',
       };
     }
 
@@ -55,7 +55,9 @@ export function normalizeApiError(error: unknown): ApiError {
       case 403:
         return {
           status,
-          message: 'Bạn không có quyền truy cập tính năng hoặc tài nguyên này.',
+          message: axiosError.config?.url?.startsWith('/auth/web/') && serverMessage
+            ? serverMessage
+            : 'Bạn không có quyền xem dữ liệu hoặc thực hiện thao tác này.',
           data,
         };
       case 404:
@@ -74,7 +76,7 @@ export function normalizeApiError(error: unknown): ApiError {
       default:
         return {
           status,
-          message: 'Đã xảy ra lỗi trên hệ thống máy chủ. Vui lòng thử lại sau.',
+          message: 'Máy chủ đang gặp lỗi. Vui lòng thử lại sau.',
           data,
         };
     }

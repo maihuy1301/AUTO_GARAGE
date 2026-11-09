@@ -242,8 +242,8 @@ export const RepairOrdersPage: React.FC = () => {
           </h2>
           <p style={{ margin: '4px 0 0 0', color: 'var(--color-outline)', fontSize: '0.875rem' }}>
             {isTechnician
-              ? 'Theo dõi danh sách các lệnh sửa chữa đã được phê duyệt phân công cho bạn'
-              : 'Theo dõi tiến độ sửa chữa, điều phối và phê duyệt phân công kỹ thuật viên'}
+              ? 'Xem các lệnh sửa chữa đã được giao cho bạn'
+              : 'Theo dõi tiến độ, phân công kỹ thuật viên và duyệt phân công'}
           </p>
         </div>
 
@@ -259,12 +259,12 @@ export const RepairOrdersPage: React.FC = () => {
             <Button
               variant="primary"
               onClick={() => setIsCreateDirectOpen(true)}
-              title="Tạo phiếu sửa chữa chủ động hoặc phiếu phát sinh"
+              title="Tạo lệnh sửa chữa mới hoặc phiếu phát sinh"
             >
               <span className="material-symbols-outlined" style={{ fontSize: '18px', marginRight: '6px' }}>
                 add_circle
               </span>
-              Tạo Phiếu Chủ Động
+              Tạo lệnh sửa chữa
             </Button>
           )}
         </div>
@@ -294,7 +294,7 @@ export const RepairOrdersPage: React.FC = () => {
           </div>
           <div className="kpi-value">{kpis.inProgress}</div>
           <div style={{ fontSize: '0.8rem', color: 'var(--color-outline)', marginTop: '6px' }}>
-            Xe đang được xử lý trên cầu nâng
+            Lệnh đang sửa chữa
           </div>
         </div>
 
@@ -307,7 +307,7 @@ export const RepairOrdersPage: React.FC = () => {
           </div>
           <div className="kpi-value">{kpis.waiting}</div>
           <div style={{ fontSize: '0.8rem', color: 'var(--color-outline)', marginTop: '6px' }}>
-            Cần điều phối thợ kỹ thuật
+            Chờ phân công kỹ thuật viên
           </div>
         </div>
 
@@ -323,7 +323,7 @@ export const RepairOrdersPage: React.FC = () => {
               {kpis.pendingApprovalCount}
             </div>
             <div style={{ fontSize: '0.8rem', color: 'var(--color-outline)', marginTop: '6px' }}>
-              Từ Lễ tân cần Quản lý duyệt
+              Phân công của lễ tân chờ duyệt
             </div>
           </div>
         ) : (
@@ -336,7 +336,7 @@ export const RepairOrdersPage: React.FC = () => {
             </div>
             <div className="kpi-value">{kpis.completed}</div>
             <div style={{ fontSize: '0.8rem', color: 'var(--color-outline)', marginTop: '6px' }}>
-              Đã xong công đoạn kỹ thuật
+              Đã hoàn tất sửa chữa
             </div>
           </div>
         )}

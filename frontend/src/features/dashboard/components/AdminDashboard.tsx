@@ -37,7 +37,7 @@ export const AdminDashboard: React.FC = () => {
       if (err && typeof err === 'object' && 'message' in err) {
         setError((err as { message: string }).message);
       } else {
-        setError('Không thể tải dữ liệu Dashboard. Vui lòng thử lại.');
+        setError('Không tải được số liệu tổng quan. Vui lòng thử lại.');
       }
     } finally {
       setIsLoading(false);
@@ -76,10 +76,10 @@ export const AdminDashboard: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-on-surface)' }}>
-            Tổng Quan Hệ Thống (System Admin)
+            Tổng quan hệ thống
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>
-            Toàn quyền giám sát số liệu hoạt động của tất cả chi nhánh garage.
+            Theo dõi doanh thu, lịch hẹn và tình hình sửa chữa tại các chi nhánh.
           </p>
         </div>
 
@@ -153,7 +153,7 @@ export const AdminDashboard: React.FC = () => {
           {branches.length === 0 ? (
             <EmptyState
               title="Chưa có dữ liệu chi nhánh"
-              description="Hệ thống chưa ghi nhận phát sinh từ các chi nhánh."
+              description="Chưa có số liệu hoạt động của các chi nhánh."
             />
           ) : (
             <div style={{ overflowX: 'auto' }}>
@@ -197,7 +197,7 @@ export const AdminDashboard: React.FC = () => {
           {inventory.length === 0 ? (
             <EmptyState
               title="Chưa có dữ liệu tồn kho"
-              description="Hiện tại kho chưa có phụ tùng nào đạt ngưỡng cảnh báo."
+              description="Chưa có số liệu tồn kho để hiển thị."
             />
           ) : (
             <div style={{ overflowX: 'auto' }}>

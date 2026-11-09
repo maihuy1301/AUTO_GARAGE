@@ -144,7 +144,7 @@ export const PartModal: React.FC<PartModalProps> = ({
                 {part ? `Chỉnh sửa phụ tùng [${part.maPhuTungCode}]` : 'Thêm Phụ Tùng Danh Mục Mới'}
               </h3>
               <p style={{ margin: 0, fontSize: '0.775rem', color: '#94a3b8' }}>
-                Đăng ký mã phụ tùng mới vào danh mục chuẩn của hệ thống
+                Thêm mã, tên, đơn vị tính và giá phụ tùng
               </p>
             </div>
           </div>
@@ -274,7 +274,7 @@ export const PartModal: React.FC<PartModalProps> = ({
                   color: 'var(--color-primary)',
                   borderColor: 'var(--color-primary)',
                 }}
-                title="Thêm hàng loạt phụ tùng vào danh mục từ file Excel (.xlsx / .csv)"
+                title="Thêm nhiều phụ tùng từ file Excel hoặc CSV"
               >
                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
                   post_add

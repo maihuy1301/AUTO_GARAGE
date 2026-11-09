@@ -37,7 +37,7 @@ export const TechnicianPerformanceTable: React.FC<TechnicianPerformanceTableProp
             Hiệu Suất Kỹ Thuật Viên
           </h3>
           <p style={{ fontSize: '0.8rem', color: 'var(--color-outline)', marginTop: '2px' }}>
-            Năng suất điều phối và tiến độ sửa chữa của đội ngũ kỹ thuật
+            Số công việc được giao, đang làm và đã hoàn tất của từng kỹ thuật viên
           </p>
         </div>
         <span
@@ -71,7 +71,7 @@ export const TechnicianPerformanceTable: React.FC<TechnicianPerformanceTableProp
             {loading ? (
               <tr>
                 <td colSpan={7} style={{ textAlign: 'center', padding: '30px', color: 'var(--color-outline)' }}>
-                  Đang nạp danh sách kỹ thuật viên...
+                  Đang tải danh sách kỹ thuật viên...
                 </td>
               </tr>
             ) : technicians.length === 0 ? (

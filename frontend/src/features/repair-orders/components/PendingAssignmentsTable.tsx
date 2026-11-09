@@ -100,7 +100,7 @@ export const PendingAssignmentsTable: React.FC<PendingAssignmentsTableProps> = (
             Không có phân công nào đang chờ duyệt
           </h4>
           <p style={{ margin: 0, color: 'var(--color-outline)', fontSize: '0.875rem' }}>
-            Mọi phân công từ Lễ tân đã được phê duyệt hoặc chưa có phân công mới.
+            Không có phân công của lễ tân đang chờ quản lý duyệt.
           </p>
         </div>
       ) : (

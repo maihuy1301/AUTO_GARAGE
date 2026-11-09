@@ -53,7 +53,7 @@ export const BrandModelManagementPage: React.FC = () => {
       if (err && typeof err === 'object' && 'message' in err) {
         setError((err as { message: string }).message);
       } else {
-        setError('Không thể tải danh mục Hãng & Model xe. Vui lòng kiểm tra lại kết nối.');
+        setError('Không tải được danh sách hãng và dòng xe. Vui lòng thử lại.');
       }
     } finally {
       setIsLoading(false);
@@ -125,7 +125,7 @@ export const BrandModelManagementPage: React.FC = () => {
             Quản Lý Hãng Xe & Model Xe
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>
-            Danh mục thương hiệu xe ô tô và hệ thống dòng xe (Model) phục vụ quản lý phương tiện kỹ thuật.
+            Quản lý hãng xe và các dòng xe thuộc từng hãng.
           </p>
         </div>
 
@@ -407,7 +407,7 @@ export const BrandModelManagementPage: React.FC = () => {
             <div className="data-table-card" style={{ padding: '32px 0' }}>
               <EmptyState
                 title="Không tìm thấy Model xe"
-                description="Không có dòng xe nào khớp với điều kiện tìm kiếm hoặc bộ lọc hãng."
+                description="Không tìm thấy dòng xe phù hợp. Thử đổi từ khóa hoặc chọn hãng khác."
               />
             </div>
           ) : (

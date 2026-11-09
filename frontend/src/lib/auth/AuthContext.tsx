@@ -1,7 +1,8 @@
 import React, { createContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { CurrentUser, LoginRequest } from '@/types/auth.types';
 import { RoleType } from '@/types/role.types';
-import { tokenStorage, parseJwtClaims } from './token-storage';
+import { tokenStorage } from './token-storage';
+import { canAccessWeb, WEB_ACCESS_MESSAGE } from './web-access';
 import { authService } from '@/features/auth/services/auth.service';
 import { registerUnauthorizedHandler } from '@/lib/api/error-handler';
 
@@ -26,37 +27,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const extractRolesFromToken = (jwtToken: string): RoleType[] => {
-    const claims = parseJwtClaims(jwtToken);
-    if (claims && Array.isArray(claims.roles)) {
-      const rawRoles = claims.roles as string[];
-      const normalized: RoleType[] = [];
-      rawRoles.forEach((r) => {
-        if (r === 'ROLE_ADMIN' || r === 'ADMIN') {
-          if (!normalized.includes('ROLE_ADMIN')) normalized.push('ROLE_ADMIN');
-        } else if (r === 'ROLE_MANAGER' || r === 'MANAGER') {
-          if (!normalized.includes('ROLE_MANAGER')) normalized.push('ROLE_MANAGER');
-        } else if (r === 'ROLE_FRONT_DESK' || r === 'FRONT_DESK') {
-          if (!normalized.includes('ROLE_FRONT_DESK')) normalized.push('ROLE_FRONT_DESK');
-        } else if (r === 'ROLE_TECHNICIAN' || r === 'TECHNICIAN') {
-          if (!normalized.includes('ROLE_TECHNICIAN')) normalized.push('ROLE_TECHNICIAN');
-        } else if (r === 'ROLE_CUSTOMER' || r === 'CUSTOMER') {
-          if (!normalized.includes('ROLE_CUSTOMER')) normalized.push('ROLE_CUSTOMER');
-        } else if (
-          r === 'ROLE_ADMIN' ||
-          r === 'ROLE_MANAGER' ||
-          r === 'ROLE_FRONT_DESK' ||
-          r === 'ROLE_TECHNICIAN' ||
-          r === 'ROLE_CUSTOMER'
-        ) {
-          normalized.push(r as RoleType);
-        }
-      });
-      return normalized;
-    }
-    return [];
-  };
-
   const logout = useCallback(() => {
     tokenStorage.removeToken();
     setToken(null);
@@ -75,14 +45,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       setIsLoading(true);
       const meData = await authService.getCurrentUser();
-      const roles = extractRolesFromToken(currentToken);
+      if (!canAccessWeb(meData.roles)) throw new Error(WEB_ACCESS_MESSAGE);
 
       setUser({
         maNguoiDung: meData.maNguoiDung,
         tenDangNhap: meData.tenDangNhap,
         hoTen: meData.hoTen,
         email: meData.email,
-        roles,
+        roles: meData.roles,
         maChiNhanh: meData.maChiNhanh,
         tenChiNhanh: meData.tenChiNhanh,
       });
@@ -90,6 +60,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (err: unknown) {
       console.warn('Failed to fetch current user profile:', err);
       logout();
+      setError(err && typeof err === 'object' && 'message' in err
+        ? String(err.message)
+        : 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
     } finally {
       setIsLoading(false);
     }
@@ -108,32 +81,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const loginResponse = await authService.login(credentials);
       tokenStorage.setToken(loginResponse.accessToken);
+      const meData = await authService.getCurrentUser();
+      if (!canAccessWeb(meData.roles)) throw new Error(WEB_ACCESS_MESSAGE);
       setToken(loginResponse.accessToken);
-
-      const roles = extractRolesFromToken(loginResponse.accessToken);
-
-      // Hydrate via /api/auth/me
-      try {
-        const meData = await authService.getCurrentUser();
-        setUser({
-          maNguoiDung: meData.maNguoiDung,
-          tenDangNhap: meData.tenDangNhap,
-          hoTen: meData.hoTen,
-          email: meData.email,
-          roles,
-          maChiNhanh: meData.maChiNhanh,
-          tenChiNhanh: meData.tenChiNhanh,
-        });
-      } catch {
-        // Fallback to login response data if /me has temporary glitch
-        setUser({
-          maNguoiDung: loginResponse.maNguoiDung,
-          tenDangNhap: loginResponse.tenDangNhap,
-          hoTen: loginResponse.hoTen,
-          roles,
-        });
-      }
+      setUser({ ...meData, roles: meData.roles });
     } catch (err: unknown) {
+      logout();
       const message = (err && typeof err === 'object' && 'message' in err)
         ? (err as { message: string }).message
         : 'Đăng nhập thất bại';

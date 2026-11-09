@@ -63,7 +63,7 @@ export const AppointmentTable: React.FC<AppointmentTableProps> = ({
     return (
       <EmptyState
         title="Không tìm thấy lịch hẹn nào"
-        description="Chưa có lịch hẹn nào phù hợp với bộ lọc hiện tại hoặc hệ thống chưa ghi nhận yêu cầu đặt lịch."
+        description="Không có lịch hẹn phù hợp. Thử đổi từ khóa hoặc bộ lọc."
       />
     );
   }

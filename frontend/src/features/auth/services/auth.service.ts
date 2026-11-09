@@ -2,6 +2,7 @@ import apiClient from '@/lib/api/client';
 import { API_ENDPOINTS } from '@/lib/api/endpoints';
 import { ApiResponse } from '@/types/api.types';
 import { LoginRequest, LoginResponse } from '@/types/auth.types';
+import { RoleType } from '@/types/role.types';
 
 export interface MeResponseData {
   maNguoiDung: number;
@@ -10,6 +11,7 @@ export interface MeResponseData {
   email?: string;
   maChiNhanh?: number | null;
   tenChiNhanh?: string | null;
+  roles: RoleType[];
 }
 
 export const authService = {

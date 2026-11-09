@@ -80,7 +80,7 @@ export const RevenueChartCard: React.FC<RevenueChartCardProps> = ({
           <p style={{ fontSize: '0.8rem', color: 'var(--color-outline)', marginTop: '2px' }}>
             {viewMode === 'branch'
               ? 'So sánh tỷ trọng doanh thu giữa các chi nhánh'
-              : 'Diễn biến doanh thu theo các chu kỳ thời gian'}
+              : 'Doanh thu theo thời gian đã chọn'}
           </p>
         </div>
 

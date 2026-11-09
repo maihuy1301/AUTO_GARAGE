@@ -43,7 +43,7 @@ export const UsersPage: React.FC = () => {
       if (err && typeof err === 'object' && 'message' in err) {
         setError((err as { message: string }).message);
       } else {
-        setError('Không thể tải danh sách tài khoản người dùng. Vui lòng kiểm tra lại kết nối máy chủ.');
+        setError('Không tải được danh sách tài khoản. Vui lòng thử lại.');
       }
     } finally {
       setIsLoading(false);
@@ -110,7 +110,7 @@ export const UsersPage: React.FC = () => {
             Tài Khoản & Phân Quyền
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>
-            Quản trị danh sách người dùng, cấp phát tài khoản và cấu hình vai trò bảo mật hệ thống.
+            Tạo tài khoản, gán vai trò và quản lý quyền truy cập.
           </p>
         </div>
 
@@ -187,7 +187,7 @@ export const UsersPage: React.FC = () => {
             value={metrics.admins}
             icon="shield_person"
             colorTheme="orange"
-            trend="ROLE_ADMIN"
+            trend="Quản trị hệ thống"
             trendUp={true}
           />
         ) : (
@@ -196,7 +196,7 @@ export const UsersPage: React.FC = () => {
             value={metrics.technicians}
             icon="engineering"
             colorTheme="orange"
-            trend="ROLE_TECHNICIAN"
+            trend="Nhân viên sửa chữa"
             trendUp={true}
           />
         )}
@@ -206,7 +206,7 @@ export const UsersPage: React.FC = () => {
             value={metrics.managers}
             icon="store_mall_directory"
             colorTheme="slate"
-            trend="ROLE_MANAGER"
+            trend="Phụ trách chi nhánh"
             trendUp={true}
           />
         ) : (
@@ -215,7 +215,7 @@ export const UsersPage: React.FC = () => {
             value={metrics.customers}
             icon="groups"
             colorTheme="slate"
-            trend="ROLE_CUSTOMER"
+            trend="Tài khoản khách hàng"
             trendUp={true}
           />
         )}

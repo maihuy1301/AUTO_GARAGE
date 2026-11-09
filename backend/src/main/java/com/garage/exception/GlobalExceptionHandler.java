@@ -38,6 +38,12 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error("Xác thực thất bại: " + ex.getMessage()));
     }
 
+    @ExceptionHandler(WebAccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleWebAccessDenied(WebAccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)

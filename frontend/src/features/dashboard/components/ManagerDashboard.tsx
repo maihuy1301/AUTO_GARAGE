@@ -81,10 +81,10 @@ export const ManagerDashboard: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-on-surface)' }}>
-            Tổng Quan Chi Nhánh (Branch Manager)
+            Tổng quan chi nhánh
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>
-            Số liệu hoạt động vận hành, tiến độ dịch vụ và doanh thu thực tế tại chi nhánh của bạn.
+            Theo dõi lịch hẹn, tiến độ sửa chữa và doanh thu của chi nhánh.
           </p>
         </div>
 
@@ -115,7 +115,7 @@ export const ManagerDashboard: React.FC = () => {
           value={formatCurrency(dashboardData?.totalRevenue || 0)}
           icon="account_balance_wallet"
           colorTheme="green"
-          trend="Đã thu thực tế"
+          trend="Tiền đã thu"
           trendUp={true}
         />
         <KpiCard

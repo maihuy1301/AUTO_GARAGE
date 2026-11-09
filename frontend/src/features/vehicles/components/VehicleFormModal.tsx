@@ -329,7 +329,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
                   info
                 </span>
-                <span>Phương tiện đăng ký mới sẽ tự động được liên kết với tài khoản khách hàng của bạn.</span>
+                <span>Xe mới sẽ được lưu vào tài khoản của bạn.</span>
               </div>
             )}
 
@@ -484,7 +484,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
             {/* Số VIN */}
             <div className="form-group" style={{ marginTop: '16px' }}>
               <label className="form-label" style={{ fontWeight: 600 }}>
-                Số khung / Số VIN (Vehicle Identification Number)
+                Số khung / VIN
               </label>
               <input
                 type="text"

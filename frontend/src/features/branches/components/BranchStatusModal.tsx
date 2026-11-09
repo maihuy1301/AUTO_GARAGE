@@ -90,7 +90,7 @@ export const BranchStatusModal: React.FC<BranchStatusModalProps> = ({
                 info
               </span>
               <span>
-                Khi ngưng hoạt động, chi nhánh sẽ không hiển thị trên danh sách tiếp nhận/lịch hẹn mới, nhưng dữ liệu lịch sử vẫn được bảo toàn nguyên vẹn.
+                Chi nhánh ngưng hoạt động sẽ không nhận lịch hẹn hoặc tiếp nhận xe mới. Dữ liệu trước đó vẫn được giữ lại.
               </span>
             </div>
           )}

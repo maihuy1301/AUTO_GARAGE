@@ -46,7 +46,7 @@ export const VehiclesPage: React.FC = () => {
       if (err && typeof err === 'object' && 'message' in err) {
         setError((err as { message: string }).message);
       } else {
-        setError('Không thể tải danh sách phương tiện. Vui lòng kiểm tra kết nối Backend.');
+        setError('Không tải được danh sách xe. Vui lòng thử lại.');
       }
     } finally {
       setIsLoading(false);
@@ -121,8 +121,8 @@ export const VehiclesPage: React.FC = () => {
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>
             {isAdmin
-              ? 'Danh mục phương tiện toàn hệ thống, thông số kỹ thuật và hồ sơ chủ sở hữu.'
-              : 'Danh sách phương tiện của bạn được đăng ký phục vụ bảo dưỡng và sửa chữa.'}
+              ? 'Tra cứu thông tin xe và chủ xe.'
+              : 'Xem và cập nhật thông tin các xe bạn đã đăng ký.'}
           </p>
         </div>
 

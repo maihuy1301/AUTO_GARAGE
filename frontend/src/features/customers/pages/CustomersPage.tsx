@@ -47,7 +47,7 @@ export const CustomersPage: React.FC = () => {
       if (err && typeof err === 'object' && 'message' in err) {
         setError((err as { message: string }).message);
       } else {
-        setError('Không thể tải danh sách khách hàng. Vui lòng kiểm tra lại kết nối máy chủ.');
+        setError('Không tải được danh sách khách hàng. Vui lòng thử lại.');
       }
     } finally {
       setIsLoading(false);
@@ -108,7 +108,7 @@ export const CustomersPage: React.FC = () => {
             Quản Lý Khách Hàng
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>
-            Hồ sơ khách hàng, thông tin liên lạc và danh sách phương tiện đã đăng ký.
+            Xem hồ sơ, thông tin liên hệ và xe của khách hàng.
           </p>
         </div>
 
@@ -168,7 +168,7 @@ export const CustomersPage: React.FC = () => {
           value={metrics.total}
           icon="groups"
           colorTheme="default"
-          trend="Hồ sơ hệ thống"
+          trend="Hồ sơ khách hàng"
           trendUp={true}
         />
         <KpiCard
@@ -184,7 +184,7 @@ export const CustomersPage: React.FC = () => {
           value={metrics.withAccount}
           icon="account_circle"
           colorTheme="orange"
-          trend="Đã liên kết user"
+          trend="Đã liên kết tài khoản"
           trendUp={true}
         />
         <KpiCard
@@ -192,7 +192,7 @@ export const CustomersPage: React.FC = () => {
           value={metrics.totalVehicles}
           icon="directions_car"
           colorTheme="slate"
-          trend="Phương tiện quản lý"
+          trend="Xe của khách hàng"
           trendUp={true}
         />
       </div>

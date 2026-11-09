@@ -22,7 +22,7 @@ const ALL_NAV_ITEMS: NavItemConfig[] = [
     label: 'Dashboard',
     path: '/app/dashboard',
     icon: 'dashboard',
-    roles: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK', 'ROLE_TECHNICIAN', 'ROLE_CUSTOMER'],
+    roles: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK'],
   },
   // Admin specific
   {
@@ -54,7 +54,7 @@ const ALL_NAV_ITEMS: NavItemConfig[] = [
     label: 'Lịch hẹn',
     path: '/app/appointments',
     icon: 'calendar_month',
-    roles: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK', 'ROLE_CUSTOMER'],
+    roles: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK'],
   },
   {
     label: 'Tiếp nhận xe',
@@ -66,13 +66,7 @@ const ALL_NAV_ITEMS: NavItemConfig[] = [
     label: 'Lệnh sửa chữa',
     path: '/app/repair-orders',
     icon: 'assignment',
-    roles: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK', 'ROLE_TECHNICIAN'],
-  },
-  {
-    label: 'Tiến độ thực hiện',
-    path: '/app/execution',
-    icon: 'construction',
-    roles: ['ROLE_ADMIN', 'ROLE_TECHNICIAN'],
+    roles: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK'],
   },
   {
     label: 'Khách hàng',
@@ -84,7 +78,7 @@ const ALL_NAV_ITEMS: NavItemConfig[] = [
     label: 'Phương tiện / Xe',
     path: '/app/vehicles',
     icon: 'directions_car',
-    roles: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_CUSTOMER'],
+    roles: ['ROLE_ADMIN', 'ROLE_MANAGER'],
   },
   {
     label: 'Hãng & Dòng xe',
@@ -99,40 +93,22 @@ const ALL_NAV_ITEMS: NavItemConfig[] = [
     roles: ['ROLE_ADMIN', 'ROLE_MANAGER'],
   },
   {
-    label: 'Báo giá dịch vụ',
-    path: '/app/quotations',
-    icon: 'request_quote',
-    roles: ['ROLE_ADMIN', 'ROLE_MANAGER'],
-  },
-  {
     label: 'Hóa đơn & Thu ngân',
     path: '/app/invoices',
     icon: 'receipt_long',
-    roles: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK', 'ROLE_CUSTOMER'],
-  },
-  {
-    label: 'Thông báo',
-    path: '/app/notifications',
-    icon: 'notifications',
-    roles: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK', 'ROLE_TECHNICIAN', 'ROLE_CUSTOMER'],
+    roles: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK'],
   },
   {
     label: 'Chat trao đổi',
     path: '/app/chat',
     icon: 'chat',
-    roles: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK', 'ROLE_TECHNICIAN', 'ROLE_CUSTOMER'],
+    roles: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK'],
   },
   {
     label: 'Báo cáo & Thống kê',
     path: '/app/reports',
     icon: 'assessment',
     roles: ['ROLE_ADMIN', 'ROLE_MANAGER'],
-  },
-  {
-    label: 'Cài đặt hệ thống',
-    path: '/app/settings',
-    icon: 'settings',
-    roles: ['ROLE_ADMIN'],
   },
 ];
 

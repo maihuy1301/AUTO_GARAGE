@@ -39,7 +39,7 @@ export const EmployeesPage: React.FC = () => {
       if (err && typeof err === 'object' && 'message' in err) {
         setError((err as { message: string }).message);
       } else {
-        setError('Không thể tải danh sách nhân viên. Vui lòng kiểm tra lại kết nối máy chủ.');
+        setError('Không tải được danh sách nhân viên. Vui lòng thử lại.');
       }
     } finally {
       setIsLoading(false);
@@ -104,7 +104,7 @@ export const EmployeesPage: React.FC = () => {
             Quản Lý Nhân Viên
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>
-            Hồ sơ nhân sự, phân bổ chi nhánh, chức vụ và quản lý trạng thái công tác.
+            Quản lý hồ sơ nhân viên, chi nhánh làm việc và chức vụ.
           </p>
         </div>
 

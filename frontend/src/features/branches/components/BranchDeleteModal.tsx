@@ -83,7 +83,7 @@ export const BranchDeleteModal: React.FC<BranchDeleteModalProps> = ({
               report
             </span>
             <span>
-              Lưu ý an toàn: Thao tác xóa cứng chỉ thành công nếu chi nhánh chưa phát sinh bất kỳ dữ liệu nghiệp vụ nào (nhân viên, lịch hẹn, phiếu sửa chữa, kho...). Nếu đã có dữ liệu, vui lòng dùng tính năng Ngưng hoạt động.
+              Chỉ xóa được chi nhánh chưa có nhân viên, lịch hẹn, phiếu sửa chữa hoặc dữ liệu kho. Nếu đã có dữ liệu, hãy chọn Ngưng hoạt động.
             </span>
           </div>
         </div>

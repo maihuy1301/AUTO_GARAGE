@@ -304,8 +304,8 @@ export const AppointmentsPage: React.FC = () => {
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>
             {isCustomer
-              ? 'Theo dõi trạng thái lịch hẹn bảo dưỡng, sửa chữa ô tô của bạn tại các chi nhánh.'
-              : 'Theo dõi, xác nhận và quản lý các yêu cầu đặt lịch hẹn dịch vụ từ khách hàng.'}
+              ? 'Xem lịch hẹn và tình trạng tiếp nhận xe của bạn.'
+              : 'Xem yêu cầu đặt lịch, xác nhận lịch hẹn và tiếp nhận xe.'}
           </p>
         </div>
 
@@ -368,7 +368,7 @@ export const AppointmentsPage: React.FC = () => {
           value={kpis.total}
           icon="calendar_month"
           colorTheme="default"
-          trend="Hệ thống ghi nhận"
+          trend="Lịch hẹn đã tạo"
           trendUp={true}
         />
         <KpiCard

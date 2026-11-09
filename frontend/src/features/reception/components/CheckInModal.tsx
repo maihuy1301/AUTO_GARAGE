@@ -79,7 +79,7 @@ export const CheckInModal: React.FC<CheckInModalProps> = ({
               Tiếp Nhận Xe — Lịch Hẹn #{appointment.maDatLich}
             </h3>
             <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--color-outline)' }}>
-              Lập biên bản tiếp nhận xe vào xưởng và ghi nhận tình trạng thực tế ban đầu
+              Ghi thông tin và tình trạng xe khi vào xưởng
             </p>
           </div>
           <button className="modal-close-btn" onClick={onClose} type="button" aria-label="Đóng">
@@ -191,7 +191,7 @@ export const CheckInModal: React.FC<CheckInModalProps> = ({
                 id="checkin-tinhTrang"
                 className="form-input"
                 style={{ height: 'auto', minHeight: '80px', resize: 'vertical', lineHeight: 1.5 }}
-                placeholder="Ghi nhận các vết trầy xước, móp méo, phụ kiện đồ dùng để lại trong xe..."
+                placeholder="Ví dụ: trầy cản sau, móp cửa trái, có camera hành trình..."
                 value={tinhTrangNgoaiThat}
                 onChange={(e) => setTinhTrangNgoaiThat(e.target.value)}
                 disabled={loading}

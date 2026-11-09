@@ -259,7 +259,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
                     style={{ backgroundColor: 'var(--color-surface-gray)', color: 'var(--color-outline)' }}
                   />
                   <span style={{ fontSize: '0.75rem', color: 'var(--color-outline)', marginTop: '2px' }}>
-                    Mật khẩu được mã hóa BCrypt an toàn.
+                    Mật khẩu hiện tại không hiển thị tại đây.
                   </span>
                 </div>
               )}
@@ -341,7 +341,7 @@ export const UserFormModal: React.FC<UserFormModalProps> = ({
 
               {isLoadingRoles ? (
                 <div style={{ padding: '16px', textAlign: 'center', color: 'var(--color-outline)', fontSize: '0.875rem' }}>
-                  Đang tải danh mục vai trò từ hệ thống...
+                  Đang tải danh sách vai trò...
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

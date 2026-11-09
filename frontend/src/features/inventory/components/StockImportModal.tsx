@@ -129,7 +129,7 @@ export const StockImportModal: React.FC<StockImportModalProps> = ({
             <div>
               <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Nhập Kho Phụ Tùng</h3>
               <p style={{ margin: 0, fontSize: '0.775rem', color: '#d1fae5' }}>
-                Tăng số lượng tồn kho và ghi nhận lịch sử giao dịch nhập kho
+                Nhập số lượng phụ tùng cần bổ sung cho chi nhánh
               </p>
             </div>
           </div>

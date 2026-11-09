@@ -83,7 +83,7 @@ export const UserStatusModal: React.FC<UserStatusModalProps> = ({
                 marginTop: '12px',
               }}
             >
-              Cảnh báo bảo mật: Đây là tài khoản Quản trị viên (ROLE_ADMIN). Hệ thống sẽ chặn thao tác nếu đây là tài khoản quản trị duy nhất đang hoạt động.
+              Đây là tài khoản quản trị viên. Không thể khóa nếu đây là quản trị viên duy nhất còn hoạt động.
             </p>
           )}
         </div>

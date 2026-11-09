@@ -128,7 +128,7 @@ export const RepairOrderTable: React.FC<RepairOrderTableProps> = ({
           Không có lệnh sửa chữa nào
         </h4>
         <p style={{ margin: 0, color: 'var(--color-outline)', fontSize: '0.875rem' }}>
-          Hiện chưa có lệnh sửa chữa nào phù hợp với bộ lọc tìm kiếm.
+          Không có lệnh sửa chữa phù hợp. Thử đổi từ khóa hoặc bộ lọc.
         </p>
       </div>
     );

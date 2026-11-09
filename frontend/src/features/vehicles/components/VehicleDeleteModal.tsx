@@ -118,7 +118,7 @@ export const VehicleDeleteModal: React.FC<VehicleDeleteModalProps> = ({
               lineHeight: 1.4,
             }}
           >
-            * Lưu ý: Nếu phương tiện đã phát sinh lịch hẹn, phiếu tiếp nhận hoặc lệnh sửa chữa, hệ thống sẽ từ chối thao tác xóa để bảo toàn dữ liệu lịch sử.
+            Không thể xóa xe đã có lịch hẹn, phiếu tiếp nhận hoặc lệnh sửa chữa.
           </p>
         </div>
 

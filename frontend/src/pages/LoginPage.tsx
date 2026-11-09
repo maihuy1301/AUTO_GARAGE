@@ -76,7 +76,7 @@ export const LoginPage: React.FC = () => {
               Đăng nhập hệ thống
             </h2>
             <p style={{ fontSize: '0.875rem', color: 'var(--color-on-surface-variant)' }}>
-              Vui lòng nhập tài khoản để tiếp tục làm việc.
+              Dành cho quản trị viên, quản lý chi nhánh và lễ tân.
             </p>
           </div>
 
@@ -90,7 +90,7 @@ export const LoginPage: React.FC = () => {
                 href="#support"
                 onClick={(e) => {
                   e.preventDefault();
-                  alert('Vui lòng liên hệ Hotline kỹ thuật nội bộ hoặc Quản trị viên chi nhánh.');
+                  alert('Bạn có thể liên hệ quản trị viên hoặc người phụ trách chi nhánh để được hỗ trợ.');
                 }}
                 style={{
                   fontWeight: 600,

@@ -178,7 +178,7 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
                 {service ? `Cập nhật dịch vụ #${service.maDichVu}` : 'Thêm Dịch Vụ Mới'}
               </h3>
               <p style={{ margin: 0, fontSize: '0.775rem', color: '#94a3b8' }}>
-                Thiết lập thông tin dịch vụ, đơn giá công và phụ tùng định mức
+                Nhập thông tin dịch vụ, giá tiền công và phụ tùng đi kèm
               </p>
             </div>
           </div>
@@ -307,7 +307,7 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
                     Phụ tùng định mức kèm theo ({defaultParts.length})
                   </div>
                   <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                    Tự động tạo lệnh xuất phụ tùng khi dịch vụ này được áp dụng
+                    Phụ tùng và số lượng dự kiến cần dùng cho dịch vụ
                   </div>
                 </div>
                 <Button variant="secondary" type="button" onClick={handleAddPartItem} style={{ padding: '4px 10px', fontSize: '0.8rem' }}>
@@ -318,7 +318,7 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
 
               {defaultParts.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '16px', color: '#94a3b8', fontSize: '0.8rem' }}>
-                  Chưa cấu hình phụ tùng định mức cho dịch vụ này (dịch vụ thuần công).
+                  Dịch vụ này chưa có phụ tùng định mức.
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

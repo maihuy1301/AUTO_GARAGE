@@ -150,7 +150,7 @@ export const GenerateInvoiceConfirmModal: React.FC<GenerateInvoiceConfirmModalPr
                 Bạn có chắc chắn muốn xuất hóa đơn cho lệnh sửa chữa này?
               </div>
               <ul style={{ margin: '6px 0 0 0', paddingLeft: '20px' }}>
-                <li>Hóa đơn sẽ bao gồm toàn bộ dịch vụ và phụ tùng của lệnh sửa chữa và các phát sinh liên quan.</li>
+                <li>Hóa đơn gồm dịch vụ, phụ tùng của lệnh sửa chữa và các phiếu phát sinh liên quan.</li>
                 <li>Sau khi xuất hóa đơn, tồn kho phụ tùng sẽ được cập nhật.</li>
               </ul>
             </div>

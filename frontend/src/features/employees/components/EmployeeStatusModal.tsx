@@ -82,7 +82,7 @@ export const EmployeeStatusModal: React.FC<EmployeeStatusModalProps> = ({
                 marginTop: '12px',
               }}
             >
-              Lưu ý: Nhân viên sau khi bị ngừng hoạt động sẽ không thể tiếp tục nhận phân công sửa chữa hoặc thao tác nghiệp vụ trên hệ thống.
+              Nhân viên ngừng hoạt động sẽ không nhận phân công sửa chữa mới.
             </p>
           )}
         </div>

@@ -178,10 +178,10 @@ export const BulkPartModal: React.FC<BulkPartModalProps> = ({
               <span className="material-symbols-outlined" style={{ color: 'var(--color-primary)' }}>
                 upload_file
               </span>
-              Nhập Danh Mục Phụ Tùng Hàng Loạt
+              Thêm phụ tùng bằng Excel
             </h3>
             <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--color-outline)' }}>
-              Thêm mới hàng loạt mặt hàng phụ tùng vào danh mục hệ thống từ file Excel (.xlsx / .csv)
+              Tải file Excel hoặc CSV để thêm nhiều phụ tùng vào danh mục
             </p>
           </div>
           <button className="modal-close-btn" onClick={handleClose} type="button" aria-label="Đóng">
@@ -219,7 +219,7 @@ export const BulkPartModal: React.FC<BulkPartModalProps> = ({
                   Bước 1: Chuẩn bị file dữ liệu
                 </div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--color-outline)', marginTop: '2px' }}>
-                  Tải file mẫu chuẩn để điền thông tin phụ tùng (Mã, Tên, ĐVT, Giá nhập, Giá bán)
+                  Điền mã, tên, đơn vị tính, giá nhập và giá bán theo file mẫu
                 </div>
               </div>
               <Button
@@ -271,7 +271,7 @@ export const BulkPartModal: React.FC<BulkPartModalProps> = ({
                   )}
                 </div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--color-outline)', marginTop: '4px' }}>
-                  Hỗ trợ định dạng Microsoft Excel (.xlsx, .xls) hoặc file văn bản ngăn cách dấu phẩy (.csv)
+                  Chấp nhận file .xlsx, .xls hoặc .csv
                 </div>
               </div>
             </div>

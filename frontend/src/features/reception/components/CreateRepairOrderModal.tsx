@@ -76,7 +76,7 @@ export const CreateRepairOrderModal: React.FC<CreateRepairOrderModalProps> = ({
               Tạo Lệnh Sửa Chữa
             </h3>
             <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--color-outline)' }}>
-              Chuyển tiếp phiếu tiếp nhận #{reception.maTiepNhan} sang quy trình sửa chữa & điều phối kỹ thuật
+              Tạo lệnh sửa chữa từ phiếu tiếp nhận #{reception.maTiepNhan}
             </p>
           </div>
           <button className="modal-close-btn" onClick={onClose} type="button" aria-label="Đóng">

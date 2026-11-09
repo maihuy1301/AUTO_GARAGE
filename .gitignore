@@ -57,3 +57,8 @@ Thumbs.db
 *.swo 
 # Build / cache 
 .cache/
+
+# Local thesis reports and diagram exports
+/docs/bao_cao/
+/docs/uml/
+*.docx

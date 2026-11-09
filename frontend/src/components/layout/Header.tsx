@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { RepairChatBell } from '@/features/repair-chat/components/RepairChatBell';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -46,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({ title = 'AutoCare Multi-Branch',
           <button
             onClick={onToggleSidebar}
             className="header-icon-btn sidebar-toggle-btn"
-            aria-label="Mở Menu Sidebar"
+            aria-label="Mở menu"
           >
             <span className="material-symbols-outlined">menu</span>
           </button>
@@ -66,14 +65,13 @@ export const Header: React.FC<HeaderProps> = ({ title = 'AutoCare Multi-Branch',
       {/* Right Area: Notifications, Help, User Dropdown */}
       <div className="header-right">
         {token && userRoles.some(role => ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK'].includes(role))
-          ? <RepairChatBell key={`${user?.maNguoiDung}-${token}`} token={token} />
-          : <Link to="/app/notifications" className="header-icon-btn" aria-label="Thông báo"><span className="material-symbols-outlined">notifications</span></Link>}
+          && <RepairChatBell key={`${user?.maNguoiDung}-${token}`} token={token} />}
 
         <button
           className="header-icon-btn"
           title="Trợ giúp & Hướng dẫn"
           aria-label="Trợ giúp"
-          onClick={() => alert('AutoCare Multi-Branch - Phiên bản 1.0.0. Tài liệu hỗ trợ: docs/PROJECT_CONTEXT.md')}
+          onClick={() => alert('Nếu cần hướng dẫn sử dụng, hãy liên hệ quản trị viên hoặc người phụ trách chi nhánh.')}
         >
           <span className="material-symbols-outlined">help_outline</span>
         </button>

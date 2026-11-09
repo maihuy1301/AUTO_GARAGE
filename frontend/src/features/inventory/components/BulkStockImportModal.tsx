@@ -150,7 +150,7 @@ export const BulkStockImportModal: React.FC<BulkStockImportModalProps> = ({
 
         if (parsedRows.length === 0) {
           if (skippedZero > 0) {
-            setError(`Tất cả ${skippedZero} mặt hàng trong file đều có số lượng bằng 0. Vui lòng mở file và nhập số lượng (> 0) cho các mặt hàng bạn muốn nhập kho.`);
+            setError(`Tất cả ${skippedZero} phụ tùng trong file đều có số lượng 0. Hãy điền số lượng lớn hơn 0 cho phụ tùng cần nhập.`);
           } else {
             setError('File Excel rỗng hoặc không có dữ liệu hợp lệ');
           }
@@ -225,7 +225,7 @@ export const BulkStockImportModal: React.FC<BulkStockImportModalProps> = ({
               Nhập Kho Phụ Tùng Hàng Loạt
             </h3>
             <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--color-outline)' }}>
-              Nhập nhiều mặt hàng phụ tùng về chi nhánh cùng lúc từ file Excel (.xlsx / .csv)
+              Tải file Excel hoặc CSV để nhập nhiều phụ tùng cho chi nhánh
             </p>
           </div>
           <button className="modal-close-btn" onClick={handleClose} type="button" aria-label="Đóng">
@@ -306,7 +306,7 @@ export const BulkStockImportModal: React.FC<BulkStockImportModalProps> = ({
                   Bước 1: Tải file mẫu nhập kho
                 </div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--color-outline)', marginTop: '2px' }}>
-                  File mẫu đã điền sẵn toàn bộ phụ tùng của garage (SL = 0). Bạn chỉ cần mở file và sửa số lượng món cần nhập.
+                  File mẫu có sẵn danh sách phụ tùng với số lượng 0. Điền số lượng lớn hơn 0 cho những phụ tùng cần nhập.
                 </div>
               </div>
               <Button
@@ -358,7 +358,7 @@ export const BulkStockImportModal: React.FC<BulkStockImportModalProps> = ({
                   )}
                 </div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--color-outline)', marginTop: '4px' }}>
-                  Hệ thống sẽ đối chiếu mã phụ tùng và kiểm tra tính hợp lệ trước khi nhập
+                  Kiểm tra mã phụ tùng và số lượng trong bảng xem trước rồi xác nhận nhập kho
                 </div>
               </div>
             </div>

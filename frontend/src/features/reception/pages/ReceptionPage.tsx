@@ -211,7 +211,7 @@ export const ReceptionPage: React.FC = () => {
             Quản Lý Tiếp Nhận Xe
           </h2>
           <p style={{ margin: '4px 0 0 0', color: 'var(--color-outline)', fontSize: '0.875rem' }}>
-            Lập biên bản tiếp nhận xe vào xưởng, ghi nhận ODO, tình trạng ngoại thất và tạo lệnh sửa chữa
+            Tiếp nhận xe, ghi số km và tình trạng xe trước khi sửa chữa
           </p>
         </div>
 
@@ -251,7 +251,7 @@ export const ReceptionPage: React.FC = () => {
           </div>
           <div className="kpi-value">{kpis.total}</div>
           <div style={{ fontSize: '0.8rem', color: 'var(--color-outline)', marginTop: '6px' }}>
-            Biên bản tiếp nhận toàn thời gian
+            Tất cả phiếu đã lập
           </div>
         </div>
 
@@ -277,13 +277,13 @@ export const ReceptionPage: React.FC = () => {
           </div>
           <div className="kpi-value">{kpis.withRepairOrder}</div>
           <div style={{ fontSize: '0.8rem', color: 'var(--color-outline)', marginTop: '6px' }}>
-            Đã chuyển sang tổ kỹ thuật
+            Đã có lệnh sửa chữa
           </div>
         </div>
 
         <div className="kpi-card">
           <div className="kpi-card-header">
-            <span className="kpi-label">Hoàn tất quy trình</span>
+            <span className="kpi-label">Đã bàn giao</span>
             <div className="kpi-icon-box green">
               <span className="material-symbols-outlined">check_circle</span>
             </div>

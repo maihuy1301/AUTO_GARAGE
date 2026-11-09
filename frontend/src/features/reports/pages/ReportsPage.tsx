@@ -237,7 +237,7 @@ export const ReportsPage: React.FC = () => {
           Báo Cáo & Thống Kê Chi Tiết
         </h1>
         <p style={{ fontSize: '0.875rem', color: 'var(--color-outline)', marginTop: '4px' }}>
-          Phân tích doanh thu, tiến độ sửa chữa, năng suất kỹ thuật viên và kiểm soát kho phụ tùng
+          Xem doanh thu, tình hình sửa chữa, công việc kỹ thuật viên và tồn kho theo kỳ
         </p>
       </div>
 

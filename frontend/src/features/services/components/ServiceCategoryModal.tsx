@@ -143,7 +143,7 @@ export const ServiceCategoryModal: React.FC<ServiceCategoryModalProps> = ({
             <div>
               <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Quản Lý Loại Dịch Vụ</h3>
               <p style={{ margin: 0, fontSize: '0.775rem', color: '#94a3b8' }}>
-                Danh mục phân nhóm các dịch vụ sửa chữa và bảo dưỡng toàn hệ thống
+                Thêm hoặc cập nhật loại dịch vụ sửa chữa, bảo dưỡng
               </p>
             </div>
           </div>
@@ -246,7 +246,7 @@ export const ServiceCategoryModal: React.FC<ServiceCategoryModalProps> = ({
                 Danh sách hiện có ({categories.length})
               </div>
               <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                * Khi tắt trạng thái, các dịch vụ thuộc loại này sẽ tự động ẩn trên hệ thống & mobile
+                Khi ngừng hoạt động loại dịch vụ, các dịch vụ thuộc loại này sẽ ẩn trên web và ứng dụng.
               </div>
             </div>
 

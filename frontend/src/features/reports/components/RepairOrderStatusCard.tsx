@@ -117,7 +117,7 @@ export const RepairOrderStatusCard: React.FC<RepairOrderStatusCardProps> = ({
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--color-success)' }} />
-                <span style={{ fontSize: '0.85rem', color: 'var(--color-on-surface)' }}>Hoàn tất nghiệm thu</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--color-on-surface)' }}>Đã hoàn tất sửa chữa</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-on-surface)' }}>{hoanTat}</span>
@@ -130,7 +130,7 @@ export const RepairOrderStatusCard: React.FC<RepairOrderStatusCardProps> = ({
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--color-primary)' }} />
-                <span style={{ fontSize: '0.85rem', color: 'var(--color-on-surface)' }}>Đang sửa trên cầu nâng</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--color-on-surface)' }}>Đang sửa chữa</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-on-surface)' }}>{dangSua}</span>
@@ -143,7 +143,7 @@ export const RepairOrderStatusCard: React.FC<RepairOrderStatusCardProps> = ({
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--color-warning)' }} />
-                <span style={{ fontSize: '0.85rem', color: 'var(--color-on-surface)' }}>Chờ điều phối / Phân công</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--color-on-surface)' }}>Chờ xử lý / phân công</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-on-surface)' }}>{choXuLy}</span>
@@ -184,17 +184,17 @@ export const RepairOrderStatusCard: React.FC<RepairOrderStatusCardProps> = ({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <div>
             <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--color-primary)' }}>
-              Top Dịch Vụ Phổ Biến
+              Dịch vụ được sử dụng nhiều
             </h3>
             <p style={{ fontSize: '0.8rem', color: 'var(--color-outline)', marginTop: '2px' }}>
-              Xếp hạng theo tần suất thực hiện
+              Sắp xếp theo số lần sử dụng trong kỳ
             </p>
           </div>
         </div>
 
         {loading ? (
           <div style={{ padding: '30px', textAlign: 'center', color: 'var(--color-outline)', fontSize: '0.85rem' }}>
-            Đang nạp top dịch vụ...
+            Đang tải danh sách dịch vụ...
           </div>
         ) : topServices.length === 0 ? (
           <div

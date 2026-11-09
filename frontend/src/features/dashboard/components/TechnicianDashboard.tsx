@@ -73,10 +73,10 @@ export const TechnicianDashboard: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-on-surface)' }}>
-            Xưởng Sửa Chữa & Kỹ Thuật (Technician Console)
+            Công việc sửa chữa
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>
-            Theo dõi phân công công việc, cập nhật tiến độ và ghi nhận dịch vụ phụ tùng thực hiện.
+            Xem công việc được giao, cập nhật tiến độ và ghi nhận phụ tùng đã sử dụng.
           </p>
         </div>
 
@@ -107,7 +107,7 @@ export const TechnicianDashboard: React.FC = () => {
           value={totalAssigned}
           icon="assignment"
           colorTheme="default"
-          trend="Phân công thực tế"
+          trend="Công việc được giao"
           trendUp={true}
         />
         <KpiCard
@@ -123,7 +123,7 @@ export const TechnicianDashboard: React.FC = () => {
           value={totalCompleted}
           icon="check_circle"
           colorTheme="green"
-          trend="Kiểm thử PASS"
+          trend="Đã hoàn tất sửa chữa"
           trendUp={true}
         />
         <KpiCard
@@ -145,7 +145,7 @@ export const TechnicianDashboard: React.FC = () => {
           <button
             type="button"
             className="btn btn-primary"
-            onClick={() => navigate('/app/execution')}
+            onClick={() => navigate('/app/repair-orders')}
           >
             <span className="material-symbols-outlined">construction</span>
             <span>Cập nhật tiến độ sửa chữa</span>

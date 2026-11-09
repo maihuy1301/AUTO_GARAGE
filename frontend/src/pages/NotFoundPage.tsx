@@ -35,7 +35,7 @@ export const NotFoundPage: React.FC = () => {
         Trang không tồn tại
       </h2>
       <p style={{ color: 'var(--text-secondary)', maxWidth: '420px', marginBottom: '24px', fontSize: '0.95rem' }}>
-        Đường dẫn bạn yêu cầu không tìm thấy hoặc đã được chuyển sang vị trí khác.
+        Không tìm thấy trang này. Bạn hãy kiểm tra lại đường dẫn.
       </p>
 
       <Button variant="primary" onClick={() => navigate('/app/dashboard')}>

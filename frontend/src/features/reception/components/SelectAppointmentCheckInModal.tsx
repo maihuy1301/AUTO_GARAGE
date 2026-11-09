@@ -85,7 +85,7 @@ export const SelectAppointmentCheckInModal: React.FC<SelectAppointmentCheckInMod
               Chọn Lịch Hẹn Cần Tiếp Nhận
             </h3>
             <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: 'var(--color-outline)' }}>
-              Chọn từ danh sách các lịch hẹn đã xác nhận để lập biên bản tiếp nhận xe vào xưởng
+              Chọn lịch hẹn đã xác nhận để tiếp nhận xe
             </p>
           </div>
           <button className="modal-close-btn" onClick={onClose} type="button" aria-label="Đóng">
@@ -160,7 +160,7 @@ export const SelectAppointmentCheckInModal: React.FC<SelectAppointmentCheckInMod
                   Không có lịch hẹn đã xác nhận nào đang chờ tiếp nhận
                 </div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--color-outline)', marginTop: '4px' }}>
-                  Vui lòng xác nhận lịch hẹn ở màn hình Lịch Hẹn trước khi thực hiện tiếp nhận xe
+                  Hãy xác nhận lịch tại mục Lịch hẹn trước khi tiếp nhận xe.
                 </div>
               </div>
             ) : (

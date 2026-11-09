@@ -52,7 +52,7 @@ export const InventoryAlertTable: React.FC<InventoryAlertTableProps> = ({
             Tồn Kho Phụ Tùng & Cảnh Báo
           </h3>
           <p style={{ fontSize: '0.8rem', color: 'var(--color-outline)', marginTop: '2px' }}>
-            Theo dõi lượng tồn kho thực tế và phát hiện sớm các mặt hàng sắp hết
+            Xem số lượng tồn và phụ tùng cần nhập thêm
           </p>
         </div>
         <span

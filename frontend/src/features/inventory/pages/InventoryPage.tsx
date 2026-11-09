@@ -239,7 +239,7 @@ export const InventoryPage: React.FC = () => {
             Quản Lý Kho & Phụ Tùng
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>
-            Danh mục phụ tùng hệ thống, theo dõi tồn kho chi nhánh và nghiệp vụ nhập/xuất kho
+            Quản lý phụ tùng, tồn kho từng chi nhánh và lịch sử nhập, xuất kho
           </p>
         </div>
 
@@ -315,7 +315,7 @@ export const InventoryPage: React.FC = () => {
           value={parts.length}
           icon="inventory_2"
           colorTheme="default"
-          trend="Hệ thống quản lý"
+          trend="Phụ tùng trong danh mục"
           trendUp={true}
         />
         <KpiCard
@@ -323,7 +323,7 @@ export const InventoryPage: React.FC = () => {
           value={activePartsCount}
           icon="check_circle"
           colorTheme="green"
-          trend="Sẵn sàng phân bổ"
+          trend="Phụ tùng đang sử dụng"
           trendUp={true}
         />
         <KpiCard
@@ -450,7 +450,7 @@ export const InventoryPage: React.FC = () => {
                   <div style={{ padding: '32px 0' }}>
                     <EmptyState
                       title="Không tìm thấy phụ tùng nào"
-                      description="Không có phụ tùng nào khớp với từ khóa tìm kiếm hoặc điều kiện lọc hiện tại."
+                      description="Không có phụ tùng phù hợp. Thử đổi từ khóa hoặc bộ lọc."
                     />
                   </div>
                 ) : (
@@ -557,7 +557,7 @@ export const InventoryPage: React.FC = () => {
                   <div style={{ padding: '32px 0' }}>
                     <EmptyState
                       title="Không có dữ liệu tồn kho"
-                      description="Không tìm thấy bản ghi tồn kho nào phù hợp với bộ lọc hiện tại."
+                      description="Không có số liệu tồn kho phù hợp với bộ lọc."
                     />
                   </div>
                 ) : (
@@ -660,7 +660,7 @@ export const InventoryPage: React.FC = () => {
                   <div style={{ padding: '32px 0' }}>
                     <EmptyState
                       title="Chưa có giao dịch kho nào"
-                      description="Lịch sử các giao dịch nhập và xuất kho sẽ được hiển thị tại đây."
+                      description="Chưa có lần nhập hoặc xuất kho nào phù hợp với bộ lọc."
                     />
                   </div>
                 ) : (

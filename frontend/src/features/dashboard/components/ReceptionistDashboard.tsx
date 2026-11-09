@@ -71,10 +71,10 @@ export const ReceptionistDashboard: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-on-surface)' }}>
-            Bàn Tiếp Nhận Dịch Vụ (Reception Desk)
+            Tiếp nhận và bàn giao xe
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>
-            Theo dõi lịch hẹn khách hàng, thực hiện check-in và điều phối phiếu sửa chữa.
+            Xác nhận lịch hẹn, tiếp nhận xe và theo dõi xe chờ bàn giao.
           </p>
         </div>
 
@@ -137,7 +137,7 @@ export const ReceptionistDashboard: React.FC = () => {
       {/* Quick Action Navigation Buttons */}
       <div className="card">
         <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--color-on-surface)', marginBottom: '16px' }}>
-          Thao tác nghiệp vụ nhanh
+          Thao tác nhanh
         </h3>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
           <button
@@ -146,7 +146,7 @@ export const ReceptionistDashboard: React.FC = () => {
             onClick={() => navigate('/app/reception')}
           >
             <span className="material-symbols-outlined">car_repair</span>
-            <span>Check-in tiếp nhận xe</span>
+            <span>Tiếp nhận xe</span>
           </button>
 
           <button

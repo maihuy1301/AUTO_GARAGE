@@ -256,7 +256,7 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
                   </select>
                   {availableVehicles.length === 0 && (!isAdmin || selectedCustomerId !== '') && (
                     <p style={{ fontSize: '0.775rem', color: 'var(--color-warning)', marginTop: '4px' }}>
-                      Khách hàng chưa có xe trong hệ thống. Vui lòng vào trang "Phương tiện / Xe" để thêm xe trước.
+                      Khách hàng chưa có xe. Hãy thêm xe tại mục "Phương tiện / Xe" trước khi đặt lịch.
                     </p>
                   )}
                 </div>
@@ -308,7 +308,7 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
                   <textarea
                     rows={3}
                     maxLength={500}
-                    placeholder="Mô tả các dịch vụ mong muốn thực hiện (ví dụ: bảo dưỡng định kỳ 20.000km, kiểm tra phanh, thay dầu nhớt...)"
+                    placeholder="Ví dụ: bảo dưỡng 20.000 km, kiểm tra phanh, thay dầu nhớt..."
                     value={ghiChu}
                     onChange={(e) => setGhiChu(e.target.value)}
                     className="form-input"

@@ -134,7 +134,7 @@ export const InvoicesPage: React.FC = () => {
             Quản Lý Hóa Đơn & Doanh Thu
           </h1>
           <p style={{ fontSize: '0.875rem', color: 'var(--color-on-surface-variant)', marginTop: '4px' }}>
-            Theo dõi danh sách hóa đơn, chi tiết dịch vụ & phụ tùng đã xuất từ các lệnh sửa chữa
+            Tra cứu hóa đơn, xem chi tiết dịch vụ, phụ tùng và tình trạng thanh toán
           </p>
         </div>
 
@@ -214,7 +214,7 @@ export const InvoicesPage: React.FC = () => {
           value={totalCount}
           icon="receipt_long"
           colorTheme="default"
-          trend="Toàn bộ chứng từ"
+          trend="Hóa đơn đã lập"
           trendUp={true}
         />
         <KpiCard
@@ -230,7 +230,7 @@ export const InvoicesPage: React.FC = () => {
           value={paidCount}
           icon="check_circle"
           colorTheme="green"
-          trend="Hoàn tất thu phí"
+          trend="Đã thu đủ tiền"
           trendUp={true}
         />
         <KpiCard
@@ -288,7 +288,7 @@ export const InvoicesPage: React.FC = () => {
           <div style={{ padding: '32px 0' }}>
             <EmptyState
               title="Không tìm thấy hóa đơn nào"
-              description="Chưa có hóa đơn nào phù hợp với bộ lọc hiện tại hoặc chưa có lệnh sửa chữa nào được xuất hóa đơn."
+              description="Không có hóa đơn phù hợp. Thử đổi từ khóa hoặc bộ lọc."
             />
           </div>
         ) : (
