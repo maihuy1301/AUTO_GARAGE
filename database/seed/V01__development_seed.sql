@@ -1,4 +1,3 @@
-CREATE 
 USE GarageManagementSystem;
 GO
 

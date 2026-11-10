@@ -165,51 +165,6 @@ export const LoginForm: React.FC = () => {
       >
         Đăng nhập
       </Button>
-
-      {/* Quick Test Accounts Helper */}
-      <div
-        style={{
-          marginTop: '20px',
-          padding: '12px',
-          backgroundColor: 'var(--color-surface-container-low)',
-          borderRadius: 'var(--radius-md)',
-          border: '1px dashed var(--color-outline-variant)',
-          fontSize: '0.775rem',
-          color: 'var(--color-on-surface-variant)',
-        }}
-      >
-        <div style={{ fontWeight: 600, marginBottom: '6px', color: 'var(--color-primary-container)' }}>
-          Tài khoản kiểm thử nhanh:
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-          {[
-            { label: 'Admin', u: 'admin' },
-            { label: 'Manager (CN001)', u: 'manager' },
-            { label: 'Frontdesk', u: 'frontdesk' },
-          ].map((acc) => (
-            <button
-              key={acc.u}
-              type="button"
-              onClick={() => {
-                setTenDangNhap(acc.u);
-                setMatKhau('Password123@');
-              }}
-              style={{
-                padding: '3px 8px',
-                borderRadius: 'var(--radius-sm)',
-                backgroundColor: '#ffffff',
-                border: '1px solid var(--color-outline-variant)',
-                fontSize: '0.75rem',
-                color: 'var(--color-on-surface)',
-                cursor: 'pointer',
-              }}
-              title={`Điền nhanh: ${acc.u} / Password123@`}
-            >
-              {acc.label}
-            </button>
-          ))}
-        </div>
-      </div>
     </form>
   );
 };

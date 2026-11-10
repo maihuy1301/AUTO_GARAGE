@@ -3883,7 +3883,7 @@ DECLARE @invoice5 INT = CONVERT(INT, SCOPE_IDENTITY());
 INSERT INTO dbo.HoaDon_DichVu (MaHoaDon, MaPhieuDichVu, DonGia) VALUES (@invoice5, @repairService32, 60000);
 DECLARE @invoiceService34 INT = CONVERT(INT, SCOPE_IDENTITY());
 INSERT INTO dbo.HoaDon_PhuTung (MaHoaDon, MaDichVuChiTiet, MaPhieuPhuTung, SoLuong, DonGia) VALUES (@invoice5, @invoiceService34, @repairPart33, 1, 160000);
-INSERT INTO dbo.ThanhToan (MaHoaDon, SoTien, PhuongThuc, MaGiaoDich, ThoiGianThanhToan, TrangThai) VALUES (@invoice5, 170000, N'TIEN_MAT', NULL, DATEADD(HOUR, 18, DATEADD(DAY, -70, @Today)), N'THANH_CONG');
+INSERT INTO dbo.ThanhToan (MaHoaDon, SoTien, PhuongThuc, MaGiaoDich, ThoiGianThanhToan, TrangThai) VALUES (@invoice5, 220000, N'TIEN_MAT', NULL, DATEADD(HOUR, 18, DATEADD(DAY, -70, @Today)), N'THANH_CONG');
 INSERT INTO dbo.BanGiaoXe (MaTiepNhan, MaNguoiBanGiao, ThoiGianBanGiao, GhiChu) VALUES (@reception5, @staffUser13, DATEADD(HOUR, 19, DATEADD(DAY, -70, @Today)), N'Khách đã kiểm tra xe, nhận hóa đơn và được hướng dẫn theo dõi sau sửa chữa.');
 INSERT INTO dbo.DanhGia (MaKhachHang, MaPhieuSuaChua, SoSao, NoiDung, NgayDanhGia) VALUES (@customer5, @order5, 3, N'Nhân viên giải thích rõ các hạng mục, xe chạy êm hơn sau bảo dưỡng.', DATEADD(HOUR, 10, DATEADD(DAY, -69, @Today)));
 INSERT INTO dbo.NhacBaoDuong (MaXe, MaDichVu, MaPhieuSuaChua, NgayDuKien, KmDuKien, TrangThai, DaGuiThongBao) VALUES (@vehicle5, @service3, @order5, CONVERT(DATE, DATEADD(DAY,90,DATEADD(DAY,-70,@Today))), 33500, N'CHO_NHAC', 0);
