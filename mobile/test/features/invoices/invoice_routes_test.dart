@@ -12,6 +12,10 @@ import 'package:garage_mobile/features/invoices/data/invoice_service.dart';
 import 'package:garage_mobile/features/technician/data/technician_service.dart';
 import 'package:garage_mobile/features/technician/domain/technician_models.dart';
 import 'package:provider/provider.dart';
+import 'package:garage_mobile/features/repair_history/data/repair_history_service.dart';
+import 'package:garage_mobile/features/vehicles/data/vehicle_service.dart';
+import '../repair_history/repair_history_test.dart'
+    show FakeHistory, FakeVehicles;
 
 import 'invoices_page_test.dart' show FakeInvoices;
 import 'payment_test.dart' show FakePayments;
@@ -67,6 +71,10 @@ void main() {
         providers: [
           ChangeNotifierProvider<AuthController>.value(value: auth),
           Provider<InvoiceGateway>.value(value: invoices),
+          Provider<RepairHistoryGateway>.value(
+            value: FakeHistory()..empty = true,
+          ),
+          Provider<VehicleGateway>.value(value: FakeVehicles()),
           Provider<ProfileGateway>.value(value: FakeProfile()),
           Provider<PaymentGateway>.value(
             value: FakePayments()..enabled = false,
@@ -79,6 +87,25 @@ void main() {
     await tester.pumpAndSettle();
     return appRouter;
   }
+
+  testWidgets(
+    'repair history retains account tab and redirects to login on logout',
+    (tester) async {
+      final auth = _Auth(_customer);
+      final app = await mount(tester, auth, FakeInvoices());
+      app.router.go('/account/repair-history');
+      await tester.pumpAndSettle();
+      expect(find.text('Chưa có lịch sử sửa chữa'), findsOneWidget);
+      expect(
+        tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+        4,
+      );
+      auth.change(null);
+      await tester.pumpAndSettle();
+      expect(app.router.routeInformationProvider.value.uri.path, '/login');
+      expect(find.text('Chưa có lịch sử sửa chữa'), findsNothing);
+    },
+  );
 
   testWidgets(
     'profile is protected, retains account navigation and exits on logout',

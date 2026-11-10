@@ -20,6 +20,7 @@ import '../features/invoices/data/invoice_service.dart';
 import '../features/invoices/data/payment_service.dart';
 import '../features/customer/data/profile_service.dart';
 import 'app.dart';
+import '../features/repair_history/data/repair_history_service.dart';
 import '../features/support_chat/data/support_chat_service.dart';
 import '../features/support_chat/presentation/support_chat_controller.dart';
 
@@ -79,6 +80,9 @@ Future<void> bootstrap() async {
           create: (_) => RepairChatService(apiClient),
         ),
         Provider<VehicleGateway>(create: (_) => VehicleService(apiClient)),
+        Provider<RepairHistoryGateway>(
+          create: (_) => RepairHistoryService(apiClient),
+        ),
         Provider<InvoiceGateway>(create: (_) => InvoiceService(apiClient)),
         Provider<PaymentGateway>(create: (_) => PaymentService(apiClient)),
         Provider<ProfileGateway>(create: (_) => ProfileService(apiClient)),

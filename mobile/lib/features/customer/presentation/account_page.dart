@@ -67,10 +67,11 @@ class AccountPage extends StatelessWidget {
             subtitle: 'Quản lý thông tin xe cá nhân',
             onTap: () => context.push('/vehicles'),
           ),
-          const _AccountTile(
+          _AccountTile(
             icon: Icons.history_rounded,
-            title: 'Lịch sử bảo dưỡng',
+            title: 'Lịch sử sửa chữa',
             subtitle: 'Xem các lần sửa chữa và bảo dưỡng',
+            onTap: () => context.push('/account/repair-history'),
           ),
           _AccountTile(
             icon: Icons.receipt_long_outlined,

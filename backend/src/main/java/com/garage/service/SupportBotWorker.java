@@ -25,10 +25,10 @@ public class SupportBotWorker {
                 com.garage.dto.SupportChatDtos.BotAnswer answer;
                 try { answer = bot.answer(request.content(), context.context(request.conversationId()),
                         context.recent(request.conversationId(), request.messageId())); }
-                catch (Exception e) { answer = SupportBotService.handoff(); }
+                catch (Exception e) { answer = SupportBotService.unavailable(); }
                 chat.completeBot(request, answer);
             });
-        } catch (RejectedExecutionException e) { chat.completeBot(request, SupportBotService.handoff()); }
+        } catch (RejectedExecutionException e) { chat.completeBot(request, SupportBotService.unavailable()); }
     }
     @PreDestroy public void close() { executor.shutdownNow(); }
 }

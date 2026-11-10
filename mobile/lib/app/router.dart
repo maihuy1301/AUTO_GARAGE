@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../features/repair_history/presentation/repair_history_page.dart';
 
 import '../core/auth/auth_controller.dart';
 import '../features/appointments/presentation/appointment_booking_page.dart';
@@ -88,6 +89,28 @@ class AppRouter {
                 path: '/account',
                 builder: (context, state) => const AccountPage(),
                 routes: [
+                  GoRoute(
+                    path: 'repair-history',
+                    builder: (context, state) => RepairHistoryPage(
+                      key: ObjectKey(authController.session),
+                    ),
+                    routes: [
+                      GoRoute(
+                        path: ':receptionId',
+                        builder: (context, state) => RepairHistoryPage(
+                          key: ValueKey((
+                            authController.session,
+                            state.pathParameters['receptionId'],
+                          )),
+                          receptionId:
+                              int.tryParse(
+                                state.pathParameters['receptionId'] ?? '',
+                              ) ??
+                              -1,
+                        ),
+                      ),
+                    ],
+                  ),
                   GoRoute(
                     path: 'profile',
                     builder: (context, state) {

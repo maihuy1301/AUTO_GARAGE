@@ -1,3 +1,5 @@
+import com.android.build.api.variant.LibraryAndroidComponentsExtension
+
 allprojects {
     repositories {
         google()
@@ -16,6 +18,15 @@ subprojects {
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
 subprojects {
+    if (name == "tflite_flutter") {
+        pluginManager.withPlugin("com.android.library") {
+            // Match the Kotlin JVM target for this plugin.
+            extensions.getByType<LibraryAndroidComponentsExtension>().finalizeDsl { android ->
+                android.compileOptions.sourceCompatibility = JavaVersion.VERSION_17
+                android.compileOptions.targetCompatibility = JavaVersion.VERSION_17
+            }
+        }
+    }
     project.evaluationDependsOn(":app")
 }
 

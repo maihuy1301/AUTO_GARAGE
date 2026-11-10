@@ -119,17 +119,20 @@ void main() {
     expect(client.auto, isFalse);
   });
   test(
-    'failed server and FCM revocation does not silently complete logout',
+    'failed revocation retries removal without re-registering logged-out user',
     () async {
       registration.setSession(customer('first'));
       await registration.retry();
       api.removeFails = true;
       client.deletionFails = true;
+      final registrationsBeforeLogout = api.registered.length;
       await expectLater(registration.logout(), throwsA(isA<AuthException>()));
       api.removeFails = false;
       client.deletionFails = false;
       await registration.retry();
-      expect(api.registered.last.$2, 'first-jwt');
+      expect(api.registered.length, registrationsBeforeLogout);
+      expect(client.auto, isFalse);
+      expect(api.removed.last, ('device-token', 'first-jwt'));
     },
   );
   test(

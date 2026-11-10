@@ -108,3 +108,12 @@ Chat giai đoạn này là tin văn bản, không upload ảnh/tệp, không typ
 - Mã booking:draft-<messageId> và mã tin client chống retry; tạo lịch, tin xác nhận và dấu chống trùng cùng transaction. Không dùng kết quả AI để tự quyết định khách đã đồng ý. Nhắn Đồng ý nhưng đổi giờ không tạo lịch mà đi qua bước sửa. Nhắn Hủy chỉ bỏ yêu cầu đang trao đổi, không hủy lịch đã lưu.
 - Handoff hoặc tin mới khiến bản tóm tắt cũ không thể được xác nhận trực tiếp. Khi lịch lỗi/trùng, transaction rollback và API trả lỗi; bot không báo thành công. Khách sửa yêu cầu rồi xác nhận lại.
 - Khi Gemini tắt/không có key, giữ FAQ và form dự phòng; khi provider lỗi/quota, chuyển tiếp tân. Chưa gọi Gemini thật/E2E trong lần kiểm tra này; test provider dùng HTTP mock.
+
+## Điều chỉnh bot tư vấn — 13/10/2026
+
+- Người dùng chốt dịch vụ + triệu chứng cơ bản + đặt lịch. Sửa prompt/FAQ, không fine-tune mô hình và không thêm bảng DB.
+- Câu mở đầu như “hãy tư vấn giúp tôi”, không dấu/chữ hoa, được trả câu hỏi làm rõ tại local, handoff=false, không gọi Gemini. Triệu chứng cơ bản hỏi hãng/model và thời điểm xuất hiện, không chẩn đoán hoặc tự kê phụ tùng. Dấu hiệu nghiêm trọng chuyển hỗ trợ trực tiếp. Giá vẫn theo danh mục thật; lịch vẫn cần khách xác nhận và backend validate.
+- Provider HTTP lỗi/quota, timeout hoặc JSON không hợp lệ dùng FAQ thay cho thông báo sai “ngoài khả năng”. Log chỉ HTTP status/loại exception, không log key, nội dung khách hoặc response body. Worker/context gián đoạn có thông báo riêng; bỏ lời hứa nhân viên trả lời ngay.
+- Kiểm tra SupportBotServiceTest, SupportChatServiceTest, SupportBookingDraftsTest, SupportChatControllerTest đạt. Không gọi Gemini thật, chưa E2E mobile/web. Không sửa .env/application.properties/model/key hoặc database, không tự restart backend.
+- Cần restart backend. Phòng đã WAITING/HUMAN cần tiếp tân xử lý và resolve về BOT theo luồng hiện hữu trước khi thử lại; không sửa DB hay xóa lịch sử.
+- FAQ vẫn là từ khóa, không hiểu đầy đủ phủ định/ngữ cảnh; chất lượng Gemini thật cần nghiệm thu riêng. Bộ quy tắc và tình huống: docs/SUPPORT_BOT_PLAYBOOK.md.

@@ -104,14 +104,14 @@ class PushRegistration {
   }
 
   Future<void> logout() async {
-    final previous = _desired;
     _desired = null;
     try {
       await _enqueue(_detach);
     } on Object {
-      _desired = previous;
+      // Keep the old binding only for revocation retries. Never register it
+      // again after the user has requested logout.
       throw const AuthException(
-        'Chưa thể ngắt thông báo trên thiết bị. Vui lòng kiểm tra mạng và đăng xuất lại.',
+        'Chưa thể ngắt thông báo trên thiết bị. Sẽ thử lại khi có kết nối.',
       );
     }
   }

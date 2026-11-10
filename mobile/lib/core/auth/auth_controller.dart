@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import 'auth_exception.dart';
@@ -94,7 +95,16 @@ class AuthController extends ChangeNotifier {
   }
 
   Future<void> logout() async {
-    await beforeLogout?.call();
+    // Capture the old push session before clearing auth, but remote cleanup must
+    // never prevent removal of the locally stored access token.
+    final cleanup = beforeLogout;
+    if (cleanup != null) {
+      unawaited(
+        Future<void>.sync(cleanup).catchError((Object _) {
+          debugPrint('Push cleanup pending after local logout.');
+        }),
+      );
+    }
     await _repository.logout();
     _session = null;
     _errorMessage = null;

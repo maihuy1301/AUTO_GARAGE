@@ -21,7 +21,11 @@ flutter pub get
 flutter run
 ```
 
-Mặc định app gọi `http://10.0.2.2:8080/api` trên Android Emulator: chỉ cần `flutter run`, không cần thêm `--dart-define` hoặc `adb reverse`. Backend Spring Boot vẫn phải chạy ở cổng 8080 trên máy tính. Với Android thật qua USB, trong VS Code tại root chọn **Garage Mobile (Điện thoại thật - USB)**: task trước Run tự forward cổng và profile truyền `http://127.0.0.1:8080/api`. Nếu dùng điện thoại thật bằng dòng lệnh, cần `adb reverse` cùng override URL USB hoặc truyền địa chỉ backend trong mạng LAN.
+Mặc định hiện tại app gọi `http://127.0.0.1:8080/api` cho Android thật qua USB. Địa chỉ này chỉ tới backend máy tính sau khi thiết lập `adb reverse`; đường chuyển tiếp có thể mất khi rút cáp, khởi động lại điện thoại hoặc ADB.
+
+Trong VS Code mở repository gốc, chọn **Garage Mobile (Điện thoại thật - USB)**. Task trước Run kiểm tra backend và thiết lập lại chuyển tiếp. Nếu chạy bằng terminal, từ thư mục `mobile` chạy `powershell -NoProfile -ExecutionPolicy Bypass -File .\connect-usb.ps1` trước khi tự chạy `flutter run`. App đang mở bị mất kết nối USB thì chạy lại script, sau đó bấm Thử lại; không cần build lại app nếu URL không đổi. Có nhiều điện thoại thì thêm `-DeviceId <id-tu-adb-devices>`.
+
+Android Emulator: chọn profile **Garage Mobile (Android Emulator)** hoặc tự chạy `flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8080/api`. Backend phải chạy ở cổng 8080. Không đổi URL mặc định trong source mỗi khi chuyển thiết bị; dùng profile hoặc `--dart-define`. `API_BASE_URL` là cấu hình lúc chạy/build Flutter, không tự đọc từ file `.env` của backend; đổi URL cần dừng và chạy lại app.
 
 Với thiết bị thật, iOS simulator hoặc desktop, truyền URL backend có thể truy cập được:
 

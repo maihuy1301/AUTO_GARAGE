@@ -455,3 +455,21 @@ Mobile ngày 2026-09-27: chi tiết lịch hẹn đọc `tongTienDichVuDuKien`, 
 ## Bàn giao nhóm web — 01/10/2026
 
 Đọc [hướng dẫn lấy code, chạy và tích hợp](docs/WEB_TEAM_QUICKSTART.md), [contract hóa đơn/thanh toán](docs/PAYMENT_SEPAY_WEB_HANDOFF.md) và [cấu hình SePay](docs/SEPAY_SETUP.md). Hướng dẫn có migration cho DB hiện hữu, nạp .env vào backend Maven, ngrok/webhook và phân chia công việc frontend. Dữ liệu local và khóa bí mật không đi theo Git.
+
+## Lịch sử sửa chữa CUSTOMER — 13/10/2026
+
+- Mobile: Tài khoản → Lịch sử sửa chữa (`/account/repair-history`), lọc xe, phân trang 20 lần, kéo tải lại và chi tiết `/account/repair-history/{receptionId}`. Giữ navbar 5 mục và tab Tài khoản; guest/TECHNICIAN không vào được route khách.
+- API mới chỉ đọc: `GET /api/repair-history?vehicleId=&page=0&size=20` (size 1–50) và `GET /api/repair-history/{id}`, chỉ ROLE_CUSTOMER. Backend lấy khách từ tài khoản đang hoạt động; lọc chủ xe trong truy vấn, không nhận owner/branch từ client. Chi tiết không thuộc quyền trả 404. Không hiển thị lần có hóa đơn của khách khác khi xe chuyển chủ.
+- Mỗi MaTiepNhan là một lần sửa. Từ 07/11/2026, lịch sử hiển thị khi các phiếu sửa chữa không hủy đã hoàn tất và hóa đơn hợp lệ đã thanh toán đủ, không cần xác nhận bàn giao riêng. Gom chi phí theo từng hóa đơn thực tế, không cộng lại phiếu con đã gộp hóa đơn. Danh sách dùng Slice (không count), projection và một truy vấn hóa đơn theo cả trang; chi tiết mới tải dòng hóa đơn qua InvoiceService với kiểm tra quyền hiện hữu.
+- Chi tiết có ngày tiếp nhận và ngày bàn giao nếu đã ghi nhận, km lúc tiếp nhận, yêu cầu khách, dịch vụ/phụ tùng trên hóa đơn và liên kết hóa đơn. Giá lấy từ chứng từ; không hiển thị chat/ghi chú nội bộ. Thiếu hóa đơn thì chi phí chưa có thông tin, không giả định bằng 0.
+- Không thêm/sửa bảng, schema, migration, index hoặc dữ liệu; không cần migration cho tính năng này. Dữ liệu cũ thiếu bản ghi bàn giao không tự suy ra là đã giao.
+- Kiểm tra: 34 targeted backend tests đạt (service/controller/query mapping, hồi quy hóa đơn/bàn giao); Flutter toàn bộ 175 tests đạt, 11 targeted tests lịch sử chạy lại ở viewport 390×844 đạt; analyze sạch. Query mapping kiểm tra offline với SQLServerDialect, chưa chạy truy vấn trên SQL Server thật hoặc E2E thiết bị.
+- Flutter SDK local tự resolve meta/test_api khi analyze; đã hoàn nguyên thay đổi pubspec.lock ngoài phạm vi. Không nâng dependency trong source. Không run/build Flutter, commit/push/deploy.
+## Điều chỉnh bot tư vấn — 13/10/2026
+
+- Người dùng chốt dịch vụ + triệu chứng cơ bản + đặt lịch. Sửa prompt/FAQ, không fine-tune mô hình và không thêm bảng DB.
+- Câu mở đầu như “hãy tư vấn giúp tôi”, không dấu/chữ hoa, được trả câu hỏi làm rõ tại local, handoff=false, không gọi Gemini. Triệu chứng cơ bản hỏi hãng/model và thời điểm xuất hiện, không chẩn đoán hoặc tự kê phụ tùng. Dấu hiệu nghiêm trọng chuyển hỗ trợ trực tiếp. Giá vẫn theo danh mục thật; lịch vẫn cần khách xác nhận và backend validate.
+- Provider HTTP lỗi/quota, timeout hoặc JSON không hợp lệ dùng FAQ thay cho thông báo sai “ngoài khả năng”. Log chỉ HTTP status/loại exception, không log key, nội dung khách hoặc response body. Worker/context gián đoạn có thông báo riêng; bỏ lời hứa nhân viên trả lời ngay.
+- Kiểm tra SupportBotServiceTest, SupportChatServiceTest, SupportBookingDraftsTest, SupportChatControllerTest đạt. Không gọi Gemini thật, chưa E2E mobile/web. Không sửa .env/application.properties/model/key hoặc database, không tự restart backend.
+- Cần restart backend. Phòng đã WAITING/HUMAN cần tiếp tân xử lý và resolve về BOT theo luồng hiện hữu trước khi thử lại; không sửa DB hay xóa lịch sử.
+- FAQ vẫn là từ khóa, không hiểu đầy đủ phủ định/ngữ cảnh; chất lượng Gemini thật cần nghiệm thu riêng. Bộ quy tắc và tình huống: docs/SUPPORT_BOT_PLAYBOOK.md.

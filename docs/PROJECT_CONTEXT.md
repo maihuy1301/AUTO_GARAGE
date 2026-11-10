@@ -482,3 +482,36 @@ Người dùng duyệt đổi tên bảng và cột. Đã áp V07__repair_chat_v
 - Đã triển khai Gemini-first khi cấu hình hợp lệ, JSON bản nháp có xe/chi nhánh/giờ/dịch vụ/nhu cầu; backend tự xây bản tóm tắt và chỉ tạo lịch sau tin xác nhận rõ ràng. Lịch vẫn CHO_XAC_NHAN.
 - Thêm SupportBookingDrafts; lưu bản nháp versioned trong tin BOT hiện hữu, không migration/schema. Kiểm tra lại ownership/active/time/catalog, hiệu lực 15 phút, khóa phòng, idempotency theo draft message ID. Hủy bản nháp không tác động lịch đã tạo; sửa thông tin cần xác nhận lại.
 - Cập nhật SupportBotService/Context, DTO, SupportChatService và test. Key/model đã có trong .env (không ghi giá trị); không gọi provider thật, không tạo lịch thật khi test. Không tự chạy Flutter, commit/push/deploy.
+
+## Lịch sử sửa chữa CUSTOMER — 13/10/2026
+
+- Mobile: Tài khoản → Lịch sử sửa chữa (`/account/repair-history`), lọc xe, phân trang 20 lần, kéo tải lại và chi tiết `/account/repair-history/{receptionId}`. Giữ navbar 5 mục và tab Tài khoản; guest/TECHNICIAN không vào được route khách.
+- API mới chỉ đọc: `GET /api/repair-history?vehicleId=&page=0&size=20` (size 1–50) và `GET /api/repair-history/{id}`, chỉ ROLE_CUSTOMER. Backend lấy khách từ tài khoản đang hoạt động; lọc chủ xe trong truy vấn, không nhận owner/branch từ client. Chi tiết không thuộc quyền trả 404. Không hiển thị lần có hóa đơn của khách khác khi xe chuyển chủ.
+- Mỗi MaTiepNhan là một lần sửa. Từ 07/11/2026, lịch sử hiển thị khi các phiếu sửa chữa không hủy đã hoàn tất và hóa đơn hợp lệ đã thanh toán đủ, không cần xác nhận bàn giao riêng. Gom chi phí theo từng hóa đơn thực tế, không cộng lại phiếu con đã gộp hóa đơn. Danh sách dùng Slice (không count), projection và một truy vấn hóa đơn theo cả trang; chi tiết mới tải dòng hóa đơn qua InvoiceService với kiểm tra quyền hiện hữu.
+- Chi tiết có ngày tiếp nhận và ngày bàn giao nếu đã ghi nhận, km lúc tiếp nhận, yêu cầu khách, dịch vụ/phụ tùng trên hóa đơn và liên kết hóa đơn. Giá lấy từ chứng từ; không hiển thị chat/ghi chú nội bộ. Thiếu hóa đơn thì chi phí chưa có thông tin, không giả định bằng 0.
+- Không thêm/sửa bảng, schema, migration, index hoặc dữ liệu; không cần migration cho tính năng này. Dữ liệu cũ thiếu bản ghi bàn giao không tự suy ra là đã giao.
+- Kiểm tra: 34 targeted backend tests đạt (service/controller/query mapping, hồi quy hóa đơn/bàn giao); Flutter toàn bộ 175 tests đạt, 11 targeted tests lịch sử chạy lại ở viewport 390×844 đạt; analyze sạch. Query mapping kiểm tra offline với SQLServerDialect, chưa chạy truy vấn trên SQL Server thật hoặc E2E thiết bị.
+- Flutter SDK local tự resolve meta/test_api khi analyze; đã hoàn nguyên thay đổi pubspec.lock ngoài phạm vi. Không nâng dependency trong source. Không run/build Flutter, commit/push/deploy.
+## Khắc phục kết nối mobile USB — 13/10/2026
+
+- Đã xác minh backend lắng nghe 8080 và GET /api/brands trả 200. Điện thoại Android thật kết nối ADB nhưng reverse --list rỗng. Source mobile mặc định 127.0.0.1 nên thiếu reverse khiến app gọi loopback của điện thoại, không tới máy tính.
+- Đã tạo lại adb reverse tcp:8080 tcp:8080; GET /api/brands từ curl trên chính điện thoại trả 200. Chưa thao tác UI app để xác nhận toàn bộ màn hình.
+- Thêm mobile/connect-usb.ps1: kiểm tra ADB, chọn đúng một điện thoại hoặc -DeviceId, kiểm tra public API backend, thiết lập và xác minh reverse; không tự chạy/build Flutter, không khởi động backend/database.
+- Cập nhật task VS Code local Garage: connect Android USB để dùng script. .vscode đang bị gitignore nên task này chỉ áp dụng máy hiện tại; script và mobile/README được theo dõi để chia sẻ quy trình.
+- Giữ nguyên default URL USB; sửa comment AppConfig và mobile/README bị lệch với source. Máy ảo dùng profile có API_BASE_URL=http://10.0.2.2:8080/api. .env backend không phải nguồn API_BASE_URL Flutter; đổi dart-define cần dừng/chạy lại app.
+- Kết nối USB có thể mất sau rút cáp/restart ADB/điện thoại. F5 bằng profile USB sẽ chạy kiểm tra trước; nếu app đang mở, chạy lại script rồi Thử lại. Không cam kết app kết nối tới máy tính khi rút USB nếu không cấu hình LAN/HTTPS.
+- Kiểm tra script với điện thoại thật: đạt; DeviceId không tồn tại: dừng exit 1 với thông báo hướng dẫn. Không thay endpoint nghiệp vụ, DB, secrets, dependencies; không run/build Flutter.
+## Điều chỉnh bot tư vấn — 13/10/2026
+
+- Người dùng chốt dịch vụ + triệu chứng cơ bản + đặt lịch. Sửa prompt/FAQ, không fine-tune mô hình và không thêm bảng DB.
+- Câu mở đầu như “hãy tư vấn giúp tôi”, không dấu/chữ hoa, được trả câu hỏi làm rõ tại local, handoff=false, không gọi Gemini. Triệu chứng cơ bản hỏi hãng/model và thời điểm xuất hiện, không chẩn đoán hoặc tự kê phụ tùng. Dấu hiệu nghiêm trọng chuyển hỗ trợ trực tiếp. Giá vẫn theo danh mục thật; lịch vẫn cần khách xác nhận và backend validate.
+- Provider HTTP lỗi/quota, timeout hoặc JSON không hợp lệ dùng FAQ thay cho thông báo sai “ngoài khả năng”. Log chỉ HTTP status/loại exception, không log key, nội dung khách hoặc response body. Worker/context gián đoạn có thông báo riêng; bỏ lời hứa nhân viên trả lời ngay.
+- Kiểm tra SupportBotServiceTest, SupportChatServiceTest, SupportBookingDraftsTest, SupportChatControllerTest đạt. Không gọi Gemini thật, chưa E2E mobile/web. Không sửa .env/application.properties/model/key hoặc database, không tự restart backend.
+- Cần restart backend. Phòng đã WAITING/HUMAN cần tiếp tân xử lý và resolve về BOT theo luồng hiện hữu trước khi thử lại; không sửa DB hay xóa lịch sử.
+- FAQ vẫn là từ khóa, không hiểu đầy đủ phủ định/ngữ cảnh; chất lượng Gemini thật cần nghiệm thu riêng. Bộ quy tắc và tình huống: docs/SUPPORT_BOT_PLAYBOOK.md.
+## Sửa đăng xuất mobile khi offline — 14/10/2026
+- Phát hiện AuthController.logout chờ beforeLogout (hủy push backend/FCM) trước khi xóa token; lỗi hoặc pending ở push chặn đăng xuất.
+- Chuyển hủy push sang tác vụ nền có bắt lỗi; vẫn chờ xóa secure storage trước khi công bố đăng xuất thành công. PushRegistration giữ desired=null khi hủy lỗi, chỉ giữ binding cũ để retry revoke, không đăng ký lại tài khoản đã thoát. App hiện hữu retry khi resume.
+- 20 targeted tests auth/push/routes đạt; flutter analyze --no-pub sạch. Chưa thử trên điện thoại. Không run/build Flutter hoặc sửa DB.
+- Hạn chế: nếu cả backend và Firebase không truy cập được thì chưa xác nhận thu hồi FCM token; thông báo hệ thống có thể còn đến đến khi revoke thành công. Retry trong bộ nhớ trong vòng đời app, không tuyên bố thu hồi push offline tức thời.
+- Kết quả hồi quy cuối: flutter test --no-pub toàn bộ 178/178 đạt; hoàn tất kiểm tra tự động, chưa thử thiết bị thật.
