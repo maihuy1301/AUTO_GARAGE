@@ -731,7 +731,6 @@ class _ProgressSheetState extends State<_ProgressSheet> {
     ('DA_PHAN_CONG', 'Đã phân công'),
     ('DANG_SUA', 'Đang sửa'),
     ('TAM_DUNG', 'Tạm dừng'),
-    ('CHO_KH_DUYET', 'Chờ khách duyệt'),
     ('HOAN_TAT', 'Hoàn tất'),
   ];
 

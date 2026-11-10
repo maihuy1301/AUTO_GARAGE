@@ -84,11 +84,20 @@ export const BulkPartModal: React.FC<BulkPartModalProps> = ({
             r['Đơn vị tính'] || r['ĐVT'] || r['DonViTinh'] || r['Unit'] || 'Cái'
           ).trim();
 
+          const parseNumber = (val: any): number => {
+            if (typeof val === 'number') return val;
+            const str = String(val ?? '').trim();
+            if (!str) return 0;
+            const isNegative = str.startsWith('-') || Number(str) < 0;
+            const num = parseFloat(str.replace(/[^0-9.]/g, '')) || 0;
+            return isNegative ? -num : num;
+          };
+
           const rawGiaNhap = r['Giá nhập (VNĐ)'] ?? r['Giá nhập'] ?? r['GiaNhap'] ?? 0;
-          const giaNhap = parseFloat(String(rawGiaNhap).replace(/[^0-9.]/g, '')) || 0;
+          const giaNhap = parseNumber(rawGiaNhap);
 
           const rawGiaBan = r['Giá bán (VNĐ)'] ?? r['Giá bán'] ?? r['GiaBan'] ?? 0;
-          const giaBan = parseFloat(String(rawGiaBan).replace(/[^0-9.]/g, '')) || 0;
+          const giaBan = parseNumber(rawGiaBan);
 
           const codeUpper = rawCode.toUpperCase();
           let err: string | undefined = undefined;

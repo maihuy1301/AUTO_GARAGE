@@ -10,6 +10,10 @@ import com.garage.exception.ResourceNotFoundException;
 import com.garage.repository.NguoiDungRepository;
 import com.garage.repository.NguoiDungVaiTroRepository;
 import com.garage.repository.VaiTroRepository;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,6 +67,7 @@ public class UserService {
         }
 
         // Validate roles
+        validateRoleAssignmentPermission(request.getRoles());
         List<VaiTro> rolesToAssign = new ArrayList<>();
         if (request.getRoles() != null && !request.getRoles().isEmpty()) {
             for (String roleName : request.getRoles()) {
@@ -109,6 +114,7 @@ public class UserService {
         user.setAnhDaiDien(request.getAnhDaiDien());
 
         if (request.getRoles() != null) {
+            validateRoleAssignmentPermission(request.getRoles());
             List<VaiTro> newRoles = new ArrayList<>();
             for (String roleName : request.getRoles()) {
                 VaiTro vaiTro = vaiTroRepository.findByTenVaiTro(roleName)
@@ -159,6 +165,26 @@ public class UserService {
         user.setTrangThai(request.getTrangThai());
         NguoiDung savedUser = nguoiDungRepository.save(user);
         return mapToUserResponse(savedUser);
+    }
+
+    private void validateRoleAssignmentPermission(List<String> roleNames) {
+        if (roleNames == null || roleNames.isEmpty()) {
+            return;
+        }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) {
+            return;
+        }
+        boolean isAdmin = auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch("ROLE_ADMIN"::equals);
+        if (!isAdmin) {
+            boolean hasRestrictedRole = roleNames.stream()
+                    .anyMatch(r -> "ROLE_ADMIN".equals(r) || "ROLE_MANAGER".equals(r));
+            if (hasRestrictedRole) {
+                throw new AccessDeniedException("Forbidden: Bạn không có quyền tạo hoặc gán vai trò Quản trị viên / Quản lý");
+            }
+        }
     }
 
     private UserResponse mapToUserResponse(NguoiDung user) {

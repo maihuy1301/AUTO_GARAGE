@@ -125,6 +125,11 @@ export const ReceptionPage: React.FC = () => {
       }
 
       return true;
+    })
+    .sort((a, b) => {
+      const timeA = a.thoiGianTiepNhan ? new Date(a.thoiGianTiepNhan).getTime() : 0;
+      const timeB = b.thoiGianTiepNhan ? new Date(b.thoiGianTiepNhan).getTime() : 0;
+      return timeB - timeA || (b.maTiepNhan - a.maTiepNhan);
     });
   }, [receptions, search, statusFilter, branchFilter, dateFilter]);
 

@@ -184,9 +184,21 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
     }
   }
 
+  String _formatLicensePlate(String raw) {
+    final upper = raw.trim().toUpperCase().replaceAll(' ', '');
+    if (RegExp(r'^\d{2}[A-Z]\d{5}$').hasMatch(upper)) {
+      return '${upper.substring(0, 3)}-${upper.substring(3)}';
+    }
+    return upper;
+  }
+
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
     setState(() => _error = null);
+    final formattedPlate = _formatLicensePlate(_plate.text);
+    if (_plate.text != formattedPlate) {
+      _plate.text = formattedPlate;
+    }
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isSubmitting = true);
     try {
@@ -755,14 +767,34 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
                         decoration: _fieldDecoration(
                           hintText: 'VD: 30K-999.99',
                         ),
-                        validator: (value) {
-                          final normalized = value?.trim() ?? '';
-                          if (normalized.isEmpty) {
-                            return 'Vui lòng nhập biển số.';
+                        onChanged: (val) {
+                          final upper = val.toUpperCase();
+                          if (RegExp(r'^\d{2}[A-Z]\d{1,5}$').hasMatch(upper)) {
+                            final formatted =
+                                '${upper.substring(0, 3)}-${upper.substring(3)}';
+                            _plate.value = TextEditingValue(
+                              text: formatted,
+                              selection: TextSelection.collapsed(
+                                offset: formatted.length,
+                              ),
+                            );
                           }
-                          return normalized.length > 20
-                              ? 'Tối đa 20 ký tự.'
-                              : null;
+                        },
+                        validator: (value) {
+                          final formatted = _formatLicensePlate(value ?? '');
+                          if (_plate.text != formatted) {
+                            _plate.value = TextEditingValue(
+                              text: formatted,
+                              selection: TextSelection.collapsed(
+                                offset: formatted.length,
+                              ),
+                            );
+                          }
+                          final plateRegex = RegExp(r'^\d{2}[A-Z]-\d{5}$');
+                          if (!plateRegex.hasMatch(formatted)) {
+                            return 'Biển số Không hợp lệ.';
+                          }
+                          return null;
                         },
                       ),
                     ),
@@ -912,7 +944,7 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
                           if (value?.trim().isEmpty ?? true) return null;
                           final number = int.tryParse(value!.trim());
                           return number == null || number < 0
-                              ? 'Nhập số không âm.'
+                              ? 'Số không hợp lệ.'
                               : null;
                         },
                       ),
@@ -930,7 +962,14 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
                         textCapitalization: TextCapitalization.characters,
                         style: const TextStyle(letterSpacing: 0.5),
                         decoration: _fieldDecoration(hintText: '17 ký tự VIN'),
-                        validator: (value) => _maxLength(value, 50, 'Số VIN'),
+                        validator: (value) {
+                          final normalized = value?.trim() ?? '';
+                          if (normalized.isEmpty) return null;
+                          final vinRegex = RegExp(r'^[a-zA-Z0-9]{1,17}$');
+                          return !vinRegex.hasMatch(normalized)
+                              ? 'Số khung không hợp lệ.'
+                              : null;
+                        },
                       ),
                     ),
                   ),
@@ -945,7 +984,14 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
                   enabled: !_isSubmitting,
                   textCapitalization: TextCapitalization.words,
                   decoration: _fieldDecoration(hintText: 'VD: Trắng'),
-                  validator: (value) => _maxLength(value, 50, 'Màu xe'),
+                  validator: (value) {
+                    final normalized = value?.trim() ?? '';
+                    if (normalized.isEmpty) return null;
+                    final colorRegex = RegExp(r'^[a-zA-ZÀ-ỹ\s]{1,50}$');
+                    return !colorRegex.hasMatch(normalized)
+                        ? 'Màu xe không hợp lệ.'
+                        : null;
+                  },
                 ),
               ),
               const SizedBox(height: 14),

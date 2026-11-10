@@ -5,11 +5,9 @@ Map<String, dynamic> invoiceJson({int id = 9}) => {
   'ngayLap': '2026-09-25T09:30:00',
   'trangThai': 'CHUA_THANH_TOAN',
   'tongTien': 400000,
-  'giamGia': '10000.50',
-  'thue': 30000,
-  'thanhTien': '419999.50',
+  'thanhTien': '400000',
   'daThanhToan': 100000,
-  'conLai': 319999.50,
+  'conLai': 300000,
   'services': [
     {
       'tenDichVu': 'Thay dầu',

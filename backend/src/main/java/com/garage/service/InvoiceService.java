@@ -130,6 +130,10 @@ public class InvoiceService {
                 repairParts.addAll(phieuSuaChuaPhuTungRepository.findByPhieuSuaChuaMaPhieuSuaChua(ro.getMaPhieuSuaChua()));
             }
 
+            if (repairServices.isEmpty() && repairParts.isEmpty()) {
+                throw new BadRequestException("Phiếu sửa chữa chưa có dịch vụ hoặc chi phí nào, không thể xuất hóa đơn");
+            }
+
             // Xử lý tồn kho (TonKho) và nhật ký xuất kho (GiaoDichKho)
             // Kiểm tra số lượng phụ tùng thực tế cần trừ thêm để tránh double deduction
             for (PhieuSuaChuaPhuTung partItem : repairParts) {
@@ -192,12 +196,7 @@ public class InvoiceService {
             }
 
             BigDecimal tongTien = totalServiceAmount.add(totalPartAmount);
-            BigDecimal giamGia = request != null && request.getGiamGia() != null ? request.getGiamGia() : BigDecimal.ZERO;
-            BigDecimal thue = request != null && request.getThue() != null ? request.getThue() : BigDecimal.ZERO;
-            BigDecimal thanhTien = tongTien.subtract(giamGia).add(thue);
-            if (thanhTien.compareTo(BigDecimal.ZERO) < 0) {
-                thanhTien = BigDecimal.ZERO;
-            }
+            BigDecimal thanhTien = tongTien;
 
             HoaDon invoice = new HoaDon();
             invoice.setPhieuSuaChua(rootOrder);
@@ -205,8 +204,6 @@ public class InvoiceService {
             invoice.setChiNhanh(rootOrder.getChiNhanh());
             invoice.setNhanVienThuNgan(cashier);
             invoice.setTongTien(tongTien);
-            invoice.setGiamGia(giamGia);
-            invoice.setThue(thue);
             invoice.setThanhTien(thanhTien);
             invoice.setTrangThai("CHUA_THANH_TOAN");
             invoice.setNgayLap(LocalDateTime.now());
@@ -570,8 +567,6 @@ public class InvoiceService {
                 cashier != null ? cashier.getMaNhanVien() : null,
                 tenCashier,
                 invoice.getTongTien(),
-                invoice.getGiamGia(),
-                invoice.getThue(),
                 invoice.getThanhTien(),
                 daThanhToan,
                 conLai,

@@ -157,6 +157,11 @@ export const RepairOrdersPage: React.FC = () => {
       }
 
       return true;
+    })
+    .sort((a, b) => {
+      const timeA = a.thoiGianBatDau ? new Date(a.thoiGianBatDau).getTime() : 0;
+      const timeB = b.thoiGianBatDau ? new Date(b.thoiGianBatDau).getTime() : 0;
+      return timeB - timeA || (b.maPhieuSuaChua - a.maPhieuSuaChua);
     });
   }, [orders, search, statusFilter, branchFilter]);
 
@@ -523,6 +528,7 @@ export const RepairOrdersPage: React.FC = () => {
       <GenerateInvoiceConfirmModal
         isOpen={isGenerateInvoiceOpen}
         repairOrder={selectedOrderForInvoice}
+        allOrders={orders}
         onClose={() => {
           setIsGenerateInvoiceOpen(false);
           setSelectedOrderForInvoice(null);

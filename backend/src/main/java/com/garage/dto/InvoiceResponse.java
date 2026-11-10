@@ -16,8 +16,6 @@ public class InvoiceResponse {
     private Integer maNhanVienThuNgan;
     private String tenThuNgan;
     private BigDecimal tongTien;
-    private BigDecimal giamGia;
-    private BigDecimal thue;
     private BigDecimal thanhTien;
     private BigDecimal daThanhToan;
     private BigDecimal conLai;
@@ -39,7 +37,7 @@ public class InvoiceResponse {
                            Integer maKhachHang, String tenKhachHang,
                            Integer maChiNhanh, String tenChiNhanh,
                            Integer maNhanVienThuNgan, String tenThuNgan,
-                           BigDecimal tongTien, BigDecimal giamGia, BigDecimal thue, BigDecimal thanhTien,
+                           BigDecimal tongTien, BigDecimal thanhTien,
                            BigDecimal daThanhToan, BigDecimal conLai,
                            String trangThai, LocalDateTime ngayLap,
                            List<InvoiceServiceItemResponse> services,
@@ -54,8 +52,6 @@ public class InvoiceResponse {
         this.maNhanVienThuNgan = maNhanVienThuNgan;
         this.tenThuNgan = tenThuNgan;
         this.tongTien = tongTien;
-        this.giamGia = giamGia;
-        this.thue = thue;
         this.thanhTien = thanhTien;
         this.daThanhToan = daThanhToan;
         this.conLai = conLai;
@@ -92,12 +88,6 @@ public class InvoiceResponse {
 
     public BigDecimal getTongTien() { return tongTien; }
     public void setTongTien(BigDecimal tongTien) { this.tongTien = tongTien; }
-
-    public BigDecimal getGiamGia() { return giamGia; }
-    public void setGiamGia(BigDecimal giamGia) { this.giamGia = giamGia; }
-
-    public BigDecimal getThue() { return thue; }
-    public void setThue(BigDecimal thue) { this.thue = thue; }
 
     public BigDecimal getThanhTien() { return thanhTien; }
     public void setThanhTien(BigDecimal thanhTien) { this.thanhTien = thanhTien; }

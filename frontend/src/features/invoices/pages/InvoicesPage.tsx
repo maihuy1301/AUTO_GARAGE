@@ -106,6 +106,11 @@ export const InvoicesPage: React.FC = () => {
         (inv.maPhieuSuaChua && inv.maPhieuSuaChua.toString().includes(term));
 
       return matchesStatus && matchesSearch;
+    })
+    .sort((a, b) => {
+      const timeA = a.ngayLap ? new Date(a.ngayLap).getTime() : 0;
+      const timeB = b.ngayLap ? new Date(b.ngayLap).getTime() : 0;
+      return timeB - timeA || (b.maHoaDon - a.maHoaDon);
     });
   }, [invoices, searchTerm, statusFilter]);
 

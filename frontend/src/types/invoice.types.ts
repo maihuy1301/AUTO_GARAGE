@@ -45,8 +45,6 @@ export interface InvoiceResponse {
   maNhanVienThuNgan?: number;
   tenThuNgan?: string;
   tongTien: number;
-  giamGia: number;
-  thue: number;
   thanhTien: number;
   daThanhToan: number;
   conLai: number;
@@ -77,8 +75,7 @@ export const InvoiceStatusTone: Record<
 };
 
 export interface CreateInvoiceRequest {
-  giamGia?: number;
-  thue?: number;
+  ghiChu?: string;
 }
 
 export interface CreatePaymentRequest {

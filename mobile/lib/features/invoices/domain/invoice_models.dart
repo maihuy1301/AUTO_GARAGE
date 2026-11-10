@@ -6,8 +6,6 @@ class CustomerInvoice {
       createdAt = DateTime.tryParse(json['ngayLap'] as String? ?? ''),
       status = json['trangThai'] as String,
       subtotal = _money(json['tongTien']),
-      discount = _money(json['giamGia']),
-      tax = _money(json['thue']),
       total = _money(json['thanhTien']),
       paid = _money(json['daThanhToan']),
       remaining = _money(json['conLai']),
@@ -21,7 +19,7 @@ class CustomerInvoice {
   final int id, repairOrderId;
   final String branchName, status;
   final DateTime? createdAt;
-  final double subtotal, discount, tax, total, paid, remaining;
+  final double subtotal, total, paid, remaining;
   final List<InvoiceItem> services, parts;
   final List<InvoicePayment> payments;
 }

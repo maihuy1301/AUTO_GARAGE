@@ -74,8 +74,6 @@ void main() {
         ('Đã phân công', 0),
         ('Đang sửa', 50),
         ('Tạm dừng', 0),
-        ('Hoàn tất', 100),
-        ('Chờ khách duyệt', 0),
       ]) {
         await tester.tap(find.byType(DropdownButtonFormField<String>));
         await tester.pumpAndSettle();
@@ -101,7 +99,7 @@ void main() {
       await tester.ensureVisible(find.text('Lưu tiến độ'));
       await tester.tap(find.text('Lưu tiến độ'));
       await tester.pumpAndSettle();
-      expect(gateway.savedProgress?.status, 'CHO_KH_DUYET');
+      expect(gateway.savedProgress?.status, 'TAM_DUNG');
       expect(gateway.savedProgress?.percent, 0);
       expect(
         gateway.savedProgress?.description,

@@ -211,23 +211,31 @@ export const AdminDashboard: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {inventory.slice(0, 5).map((inv) => (
-                    <tr key={`${inv.partId}-${inv.branchName}`} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                      <td style={{ padding: '12px', fontWeight: 600, color: 'var(--color-on-surface)' }}>
-                        <div>{inv.partName}</div>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--color-outline)' }}>{inv.partCode}</span>
-                      </td>
-                      <td style={{ padding: '12px', textAlign: 'center', fontSize: '0.8rem' }}>{inv.branchName}</td>
-                      <td style={{ padding: '12px', textAlign: 'center', fontWeight: 700 }}>{inv.stockQuantity}</td>
-                      <td style={{ padding: '12px', textAlign: 'center' }}>
-                        {inv.warningLowStock ? (
-                          <span className="status-badge danger">Sắp hết</span>
-                        ) : (
-                          <span className="status-badge success">Đủ hàng</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                  {inventory.slice(0, 5).map((inv, idx) => {
+                    const partName = inv.tenPhuTung || inv.partName || `Phụ tùng #${inv.maPhuTung || inv.partId || idx + 1}`;
+                    const partCode = inv.maPhuTungCode || inv.partCode || '—';
+                    const branchName = inv.tenChiNhanh || inv.branchName || 'Toàn hệ thống';
+                    const stock = inv.soLuongTon ?? inv.stockQuantity ?? 0;
+                    const isLow = inv.sapHetHang ?? inv.warningLowStock ?? false;
+
+                    return (
+                      <tr key={inv.maPhuTung || inv.partId || `${partCode}-${idx}`} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                        <td style={{ padding: '12px', fontWeight: 600, color: 'var(--color-on-surface)' }}>
+                          <div>{partName}</div>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--color-outline)' }}>{partCode}</span>
+                        </td>
+                        <td style={{ padding: '12px', textAlign: 'center', fontSize: '0.8rem' }}>{branchName}</td>
+                        <td style={{ padding: '12px', textAlign: 'center', fontWeight: 700 }}>{stock}</td>
+                        <td style={{ padding: '12px', textAlign: 'center' }}>
+                          {isLow ? (
+                            <span className="status-badge danger">Sắp hết</span>
+                          ) : (
+                            <span className="status-badge success">Đủ hàng</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

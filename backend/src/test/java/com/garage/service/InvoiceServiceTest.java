@@ -183,8 +183,6 @@ class InvoiceServiceTest {
         invoice1.setKhachHang(customer1);
         invoice1.setChiNhanh(branch1);
         invoice1.setTongTien(new BigDecimal("880000.00"));
-        invoice1.setGiamGia(BigDecimal.ZERO);
-        invoice1.setThue(BigDecimal.ZERO);
         invoice1.setThanhTien(new BigDecimal("880000.00"));
         invoice1.setTrangThai("CHUA_THANH_TOAN");
         invoice1.setNgayLap(LocalDateTime.now());
@@ -528,6 +526,25 @@ class InvoiceServiceTest {
         assertThatThrownBy(() -> invoiceService.createInvoice(601, req))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessageContaining("Lệnh sửa chữa chưa hoàn tất");
+
+        verify(hoaDonRepository, never()).save(any(HoaDon.class));
+    }
+
+    /**
+     * Lệnh sửa chữa hoàn tất nhưng không có bất kỳ dịch vụ hay chi phí nào -> Chặn xuất hóa đơn 0đ
+     */
+    @Test
+    void createInvoice_emptyServicesAndParts_throwsBadRequest() {
+        stubStaffAuth();
+        when(phieuSuaChuaRepository.findById(601)).thenReturn(Optional.of(order1));
+        when(phieuSuaChuaRepository.findByChiNhanhMaChiNhanh(1)).thenReturn(List.of(order1));
+        when(phieuSuaChuaDichVuRepository.findByPhieuSuaChuaMaPhieuSuaChua(601)).thenReturn(List.of());
+        when(phieuSuaChuaPhuTungRepository.findByPhieuSuaChuaMaPhieuSuaChua(601)).thenReturn(List.of());
+
+        CreateInvoiceRequest req = new CreateInvoiceRequest();
+        assertThatThrownBy(() -> invoiceService.createInvoice(601, req))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("chưa có dịch vụ hoặc chi phí nào");
 
         verify(hoaDonRepository, never()).save(any(HoaDon.class));
     }

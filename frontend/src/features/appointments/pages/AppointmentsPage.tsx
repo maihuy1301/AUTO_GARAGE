@@ -189,6 +189,11 @@ export const AppointmentsPage: React.FC = () => {
       }
 
       return true;
+    })
+    .sort((a, b) => {
+      const timeA = a.ngayDat ? new Date(a.ngayDat).getTime() : (a.thoiGianHen ? new Date(a.thoiGianHen).getTime() : 0);
+      const timeB = b.ngayDat ? new Date(b.ngayDat).getTime() : (b.thoiGianHen ? new Date(b.thoiGianHen).getTime() : 0);
+      return timeB - timeA || (b.maDatLich - a.maDatLich);
     });
   }, [appointments, search, statusFilter, branchFilter, dateFilter]);
 

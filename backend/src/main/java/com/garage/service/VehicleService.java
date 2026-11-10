@@ -143,6 +143,7 @@ public class VehicleService {
         if (request.getSoVIN() != null && !request.getSoVIN().isBlank()) {
             validateSoVINUnique(request.getSoVIN(), null);
         }
+        validateVehicleData(request.getNamSanXuat(), request.getSoKmHienTai());
 
         Xe xe = new Xe();
         xe.setKhachHang(owner);
@@ -285,7 +286,20 @@ public class VehicleService {
         }
     }
 
+    private void validateVehicleData(Integer namSanXuat, Integer soKmHienTai) {
+        if (soKmHienTai != null && soKmHienTai < 0) {
+            throw new BadRequestException("Số KM hiện tại không thể là số âm");
+        }
+        if (namSanXuat != null) {
+            int currentYear = java.time.Year.now().getValue();
+            if (namSanXuat < 1950 || namSanXuat > currentYear + 1) {
+                throw new BadRequestException("Năm sản xuất không hợp lệ (1950 - " + (currentYear + 1) + ")");
+            }
+        }
+    }
+
     private void applyVehicleUpdate(Xe xe, UpdateVehicleRequest request) {
+        validateVehicleData(request.getNamSanXuat(), request.getSoKmHienTai());
         if (request.getMaModel() != null) {
             ModelXe modelXe = validateBrandAndModel(request.getMaHangXe(), request.getMaModel());
             xe.setModelXe(modelXe);

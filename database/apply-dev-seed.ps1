@@ -12,10 +12,10 @@ if ([string]::IsNullOrWhiteSpace($Password)) {
 }
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$seedFile = Join-Path $scriptDir "seed\V01__development_seed.sql"
+$seedDir = Join-Path $scriptDir "seed"
 
-if (-not (Test-Path -LiteralPath $seedFile)) {
-    throw "Seed file not found: $seedFile"
+if (-not (Test-Path -LiteralPath $seedDir)) {
+    throw "Seed directory not found: $seedDir"
 }
 
 function Resolve-Sqlcmd {
@@ -53,10 +53,13 @@ if (($dbCheck -join "").Trim() -ne "EXISTS") {
     throw "Database '$Database' does not exist. Start the Docker SQL Server and let GarageManagementSystem.sql initialize it first."
 }
 
-Write-Host "Applying idempotent development seed: $seedFile"
-& $sqlcmd -S $Server -U $Username -P $Password -C -d $Database -b -i $seedFile
-if ($LASTEXITCODE -ne 0) {
-    throw "Development seed failed."
+$seedFiles = Get-ChildItem -Path $seedDir -Filter "*.sql" | Sort-Object Name
+foreach ($seed in $seedFiles) {
+    Write-Host "Applying seed: $($seed.Name)..."
+    & $sqlcmd -S $Server -U $Username -P $Password -C -d $Database -b -i $seed.FullName
+    if ($LASTEXITCODE -ne 0) {
+        throw "Seed failed on $($seed.Name)."
+    }
 }
 
-Write-Host "Development seed completed successfully."
+Write-Host "All seeds completed successfully."

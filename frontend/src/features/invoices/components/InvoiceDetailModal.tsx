@@ -301,14 +301,6 @@ export const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({
                 <span>Tổng tiền dịch vụ & phụ tùng:</span>
                 <span style={{ fontWeight: 600 }}>{formatCurrency(invoice.tongTien)}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem', color: '#475569' }}>
-                <span>Giảm giá:</span>
-                <span style={{ color: '#ef4444' }}>- {formatCurrency(invoice.giamGia)}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem', color: '#475569' }}>
-                <span>Thuế (VAT):</span>
-                <span>+ {formatCurrency(invoice.thue)}</span>
-              </div>
               <div
                 style={{
                   display: 'flex',

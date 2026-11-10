@@ -230,7 +230,7 @@ class TechnicianService implements TechnicianGateway {
   int _statusPriority(String status) => switch (status) {
     'DANG_SUA' => 0,
     'DA_PHAN_CONG' => 1,
-    'TAM_DUNG' || 'CHO_KH_DUYET' => 2,
+    'TAM_DUNG' => 2,
     'HOAN_TAT' => 3,
     'HUY' => 4,
     _ => 2,

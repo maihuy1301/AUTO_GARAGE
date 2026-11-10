@@ -208,9 +208,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
     _Section(
       title: 'Tổng cộng',
       children: [
-        _Amount('Tạm tính', invoice.subtotal),
-        _Amount('Giảm giá', invoice.discount),
-        _Amount('Thuế', invoice.tax),
+        _Amount('Tổng chi phí dịch vụ & phụ tùng', invoice.subtotal),
         const Divider(),
         _Amount('Tổng thanh toán', invoice.total, emphasis: true),
         _Amount('Đã thanh toán', invoice.paid),

@@ -32,7 +32,7 @@ const ALL_NAV_ITEMS: NavItemConfig[] = [
     roles: ['ROLE_ADMIN'],
   },
   {
-    label: 'Tài khoản & Phân quyền',
+    label: 'Quản lý tài khoản',
     path: '/app/users',
     icon: 'manage_accounts',
     roles: ['ROLE_ADMIN', 'ROLE_MANAGER'],
@@ -57,13 +57,13 @@ const ALL_NAV_ITEMS: NavItemConfig[] = [
     roles: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK'],
   },
   {
-    label: 'Tiếp nhận xe',
+    label: 'Tiếp nhận xe và tạo lệnh sửa chữa ',
     path: '/app/reception',
     icon: 'car_repair',
     roles: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK'],
   },
   {
-    label: 'Lệnh sửa chữa',
+    label: 'Phân công kỹ thuật viên',
     path: '/app/repair-orders',
     icon: 'assignment',
     roles: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK'],
@@ -75,7 +75,7 @@ const ALL_NAV_ITEMS: NavItemConfig[] = [
     roles: ['ROLE_ADMIN'],
   },
   {
-    label: 'Phương tiện / Xe',
+    label: 'Phương tiện',
     path: '/app/vehicles',
     icon: 'directions_car',
     roles: ['ROLE_ADMIN', 'ROLE_MANAGER'],
@@ -93,7 +93,7 @@ const ALL_NAV_ITEMS: NavItemConfig[] = [
     roles: ['ROLE_ADMIN', 'ROLE_MANAGER'],
   },
   {
-    label: 'Hóa đơn & Thu ngân',
+    label: 'Hóa đơn',
     path: '/app/invoices',
     icon: 'receipt_long',
     roles: ['ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_FRONT_DESK'],

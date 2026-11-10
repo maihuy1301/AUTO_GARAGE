@@ -136,7 +136,7 @@ export const ManagerDashboard: React.FC = () => {
         />
         <KpiCard
           label="Cảnh Báo Tồn Kho"
-          value={inventory.filter((i) => i.warningLowStock).length}
+          value={inventory.filter((i) => i.sapHetHang ?? i.warningLowStock ?? false).length}
           icon="inventory_2"
           colorTheme="slate"
           trend={`${inventory.length} mã phụ tùng`}

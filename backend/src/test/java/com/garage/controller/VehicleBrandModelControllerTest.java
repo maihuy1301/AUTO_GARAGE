@@ -70,6 +70,23 @@ class VehicleBrandModelControllerTest {
         return jwtService.generateToken("admin", List.of("ROLE_ADMIN"));
     }
 
+    private String createManagerToken() {
+        NguoiDung manager = new NguoiDung();
+        manager.setMaNguoiDung(2);
+        manager.setTenDangNhap("manager");
+        manager.setHoTen("Manager");
+        manager.setTrangThai(true);
+
+        VaiTro role = new VaiTro();
+        role.setMaVaiTro(2);
+        role.setTenVaiTro("ROLE_MANAGER");
+
+        when(nguoiDungRepository.findByTenDangNhapOrEmail("manager", "manager")).thenReturn(Optional.of(manager));
+        when(nguoiDungVaiTroRepository.findByNguoiDungMaNguoiDung(2)).thenReturn(List.of(new NguoiDungVaiTro(manager, role)));
+
+        return jwtService.generateToken("manager", List.of("ROLE_MANAGER"));
+    }
+
     @Test
     void getAllBrands_publicEndpoint_returns200() throws Exception {
         when(brandModelService.getAllActiveBrands()).thenReturn(List.of(
@@ -127,5 +144,29 @@ class VehicleBrandModelControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.tenModel").value("Camry"));
+    }
+
+    @Test
+    void createBrand_managerRole_returns403() throws Exception {
+        String token = createManagerToken();
+        CreateBrandRequest request = new CreateBrandRequest("Toyota");
+
+        mockMvc.perform(post("/api/brands")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void createModel_managerRole_returns403() throws Exception {
+        String token = createManagerToken();
+        CreateModelRequest request = new CreateModelRequest("Camry");
+
+        mockMvc.perform(post("/api/brands/1/models")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
     }
 }

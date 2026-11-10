@@ -80,7 +80,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setError(null);
     try {
       const loginResponse = await authService.login(credentials);
-      tokenStorage.setToken(loginResponse.accessToken);
+      tokenStorage.setToken(loginResponse.accessToken, credentials.rememberMe);
       const meData = await authService.getCurrentUser();
       if (!canAccessWeb(meData.roles)) throw new Error(WEB_ACCESS_MESSAGE);
       setToken(loginResponse.accessToken);

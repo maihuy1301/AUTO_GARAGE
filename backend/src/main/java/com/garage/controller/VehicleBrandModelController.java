@@ -39,10 +39,10 @@ public class VehicleBrandModelController {
     }
 
     /**
-     * POST /api/brands — Quản trị viên / Quản lý thêm hãng xe mới
+     * POST /api/brands — Quản trị viên thêm hãng xe mới
      */
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<BrandResponse>> createBrand(@Valid @RequestBody CreateBrandRequest request) {
         BrandResponse response = vehicleBrandModelService.createBrand(request);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -59,10 +59,10 @@ public class VehicleBrandModelController {
     }
 
     /**
-     * POST /api/brands/{brandId}/models — Quản trị viên / Quản lý thêm model xe mới
+     * POST /api/brands/{brandId}/models — Quản trị viên thêm model xe mới
      */
     @PostMapping("/{brandId}/models")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ModelResponse>> createModel(
             @PathVariable Integer brandId,
             @Valid @RequestBody CreateModelRequest request) {

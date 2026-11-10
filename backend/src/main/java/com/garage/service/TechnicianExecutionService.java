@@ -116,7 +116,7 @@ public class TechnicianExecutionService {
             }
             order.setThoiGianHoanTat(LocalDateTime.now());
             order.setTrangThai("HOAN_TAT");
-        } else if ("TAM_DUNG".equalsIgnoreCase(newStatus) || "CHO_KH_DUYET".equalsIgnoreCase(newStatus) || "DA_PHAN_CONG".equalsIgnoreCase(newStatus)) {
+        } else if ("TAM_DUNG".equalsIgnoreCase(newStatus) || "DA_PHAN_CONG".equalsIgnoreCase(newStatus)) {
             order.setTrangThai(newStatus);
         } else {
             throw new BadRequestException("Trạng thái tiến độ không hợp lệ: " + newStatus);
@@ -176,7 +176,7 @@ public class TechnicianExecutionService {
                     phieuSuaChuaRepository.save(ro);
                     customerProgressNotifier.repairChanged(ro, prevChildStatus);
                 }
-            } else if ("TAM_DUNG".equalsIgnoreCase(order.getTrangThai()) || "CHO_KH_DUYET".equalsIgnoreCase(order.getTrangThai())) {
+            } else if ("TAM_DUNG".equalsIgnoreCase(order.getTrangThai())) {
                 if (!"HOAN_TAT".equalsIgnoreCase(ro.getTrangThai())) {
                     ro.setTrangThai(order.getTrangThai());
                     phieuSuaChuaRepository.save(ro);

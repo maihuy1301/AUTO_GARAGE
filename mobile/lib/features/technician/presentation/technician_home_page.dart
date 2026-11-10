@@ -353,11 +353,6 @@ TechnicianStatusPresentation technicianStatusPresentation(String status) {
       AppColors.warning,
       Icons.pause_circle_outline_rounded,
     ),
-    'CHO_KH_DUYET' => const TechnicianStatusPresentation(
-      'Chờ khách duyệt',
-      AppColors.warning,
-      Icons.hourglass_top_rounded,
-    ),
     'HOAN_TAT' => const TechnicianStatusPresentation(
       'Hoàn tất',
       AppColors.success,

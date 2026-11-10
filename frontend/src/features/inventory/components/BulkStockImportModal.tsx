@@ -106,8 +106,17 @@ export const BulkStockImportModal: React.FC<BulkStockImportModalProps> = ({
             r['Mã phụ tùng (*)'] || r['Mã phụ tùng'] || r['MaPhuTungCode'] || r['Code'] || r['Mã'] || ''
           ).trim();
 
+          const parseQuantity = (val: any): number => {
+            if (typeof val === 'number') return val;
+            const str = String(val ?? '').trim();
+            if (!str) return 0;
+            const isNegative = str.startsWith('-') || Number(str) < 0;
+            const num = parseInt(str.replace(/[^0-9]/g, ''), 10) || 0;
+            return isNegative ? -num : num;
+          };
+
           const rawQty = r['Số lượng nhập (*)'] ?? r['Số lượng nhập'] ?? r['Số lượng'] ?? r['SoLuong'] ?? r['Quantity'] ?? 0;
-          const qty = parseInt(String(rawQty).replace(/[^0-9]/g, ''), 10) || 0;
+          const qty = parseQuantity(rawQty);
 
           // Nếu số lượng <= 0: tự động bỏ qua không coi là lỗi
           if (qty <= 0) {

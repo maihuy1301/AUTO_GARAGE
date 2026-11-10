@@ -401,7 +401,7 @@ export const RepairOrderDetailModal: React.FC<RepairOrderDetailModalProps> = ({
                         </h4>
                       </div>
 
-                      {canAssign && (
+                      {canAssign && !repairOrder.maPhieuCha && (
                         <Button
                           variant="primary"
                           onClick={() => setIsAssignModalOpen(true)}

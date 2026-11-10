@@ -1,5 +1,6 @@
 package com.garage.dto;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -35,6 +36,7 @@ public class CreateVehicleRequest {
     @Size(max = 50, message = "Số VIN không được vượt quá 50 ký tự")
     private String soVIN;
 
+    @Min(value = 0, message = "Số KM hiện tại không thể là số âm")
     private Integer soKmHienTai;
 
     public CreateVehicleRequest() {}

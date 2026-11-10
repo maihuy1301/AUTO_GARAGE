@@ -408,7 +408,7 @@ export const RepairOrderTable: React.FC<RepairOrderTableProps> = ({
                                 onClick: () => onGenerateInvoice(order),
                               }
                             : false,
-                          canAssign && onAssign
+                          canAssign && onAssign && !order.maPhieuCha
                             ? {
                                 label: 'Phân công kỹ thuật viên',
                                 icon: 'person_add',
@@ -568,7 +568,7 @@ export const RepairOrderTable: React.FC<RepairOrderTableProps> = ({
                                       onClick: () => onGenerateInvoice(child),
                                     }
                                   : false,
-                                canAssign && onAssign
+                                canAssign && onAssign && !child.maPhieuCha
                                   ? {
                                       label: 'Phân công kỹ thuật viên',
                                       icon: 'person_add',

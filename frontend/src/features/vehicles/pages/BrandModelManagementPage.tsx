@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { BrandResponse, ModelResponse, CreateBrandRequest, CreateModelRequest } from '@/types/brand-model.types';
 import { brandModelService } from '@/features/vehicles/services/brand-model.service';
 import { BrandFormModal } from '@/features/vehicles/components/BrandFormModal';
@@ -10,6 +11,10 @@ import { Button } from '@/components/common/Button';
 import { ActionDropdown } from '@/components/common/ActionDropdown';
 
 export const BrandModelManagementPage: React.FC = () => {
+  const { user } = useAuth();
+  const userRoles = user?.roles || [];
+  const isAdmin = userRoles.includes('ROLE_ADMIN');
+
   const [activeTab, setActiveTab] = useState<'BRANDS' | 'MODELS'>('BRANDS');
   const [brands, setBrands] = useState<BrandResponse[]>([]);
   const [allModels, setAllModels] = useState<Record<number, ModelResponse[]>>({});
@@ -148,29 +153,31 @@ export const BrandModelManagementPage: React.FC = () => {
             <span>{isLoading ? 'Đang tải...' : 'Làm mới'}</span>
           </button>
 
-          {activeTab === 'BRANDS' ? (
-            <Button
-              variant="primary"
-              onClick={() => setIsBrandModalOpen(true)}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
-                add_circle
-              </span>
-              <span>Thêm hãng xe</span>
-            </Button>
-          ) : (
-            <Button
-              variant="primary"
-              onClick={() => {
-                setModelTargetBrandId(selectedBrandFilter !== 'ALL' ? Number(selectedBrandFilter) : undefined);
-                setIsModelModalOpen(true);
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
-                add_circle
-              </span>
-              <span>Thêm Model xe</span>
-            </Button>
+          {isAdmin && (
+            activeTab === 'BRANDS' ? (
+              <Button
+                variant="primary"
+                onClick={() => setIsBrandModalOpen(true)}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+                  add_circle
+                </span>
+                <span>Thêm hãng xe</span>
+              </Button>
+            ) : (
+              <Button
+                variant="primary"
+                onClick={() => {
+                  setModelTargetBrandId(selectedBrandFilter !== 'ALL' ? Number(selectedBrandFilter) : undefined);
+                  setIsModelModalOpen(true);
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+                  add_circle
+                </span>
+                <span>Thêm Model xe</span>
+              </Button>
+            )
           )}
         </div>
       </div>
@@ -348,15 +355,17 @@ export const BrandModelManagementPage: React.FC = () => {
                                     setActiveTab('MODELS');
                                   },
                                 },
-                                {
-                                  label: 'Thêm dòng xe mới',
-                                  icon: 'add_circle',
-                                  variant: 'primary',
-                                  onClick: () => {
-                                    setModelTargetBrandId(brand.maHangXe);
-                                    setIsModelModalOpen(true);
-                                  },
-                                },
+                                isAdmin
+                                  ? {
+                                      label: 'Thêm dòng xe mới',
+                                      icon: 'add_circle',
+                                      variant: 'primary',
+                                      onClick: () => {
+                                        setModelTargetBrandId(brand.maHangXe);
+                                        setIsModelModalOpen(true);
+                                      },
+                                    }
+                                  : false,
                               ]}
                             />
                           </td>
@@ -456,18 +465,20 @@ export const BrandModelManagementPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <Button
-                      variant="secondary"
-                      onClick={() => {
-                        setModelTargetBrandId(brand.maHangXe);
-                        setIsModelModalOpen(true);
-                      }}
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
-                        add
-                      </span>
-                      <span>Thêm Model cho {brand.tenHangXe}</span>
-                    </Button>
+                    {isAdmin && (
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          setModelTargetBrandId(brand.maHangXe);
+                          setIsModelModalOpen(true);
+                        }}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                          add
+                        </span>
+                        <span>Thêm Model cho {brand.tenHangXe}</span>
+                      </Button>
+                    )}
                   </div>
 
                   {/* Models Grid / Tree */}
@@ -534,20 +545,24 @@ export const BrandModelManagementPage: React.FC = () => {
         </div>
       )}
 
-      {/* Modals */}
-      <BrandFormModal
-        isOpen={isBrandModalOpen}
-        onClose={() => setIsBrandModalOpen(false)}
-        onSubmit={handleCreateBrand}
-      />
+      {/* Modals (Chỉ Admin mới có quyền tạo mới) */}
+      {isAdmin && (
+        <>
+          <BrandFormModal
+            isOpen={isBrandModalOpen}
+            onClose={() => setIsBrandModalOpen(false)}
+            onSubmit={handleCreateBrand}
+          />
 
-      <ModelFormModal
-        isOpen={isModelModalOpen}
-        brandsList={brands}
-        selectedBrandId={modelTargetBrandId}
-        onClose={() => setIsModelModalOpen(false)}
-        onSubmit={handleCreateModel}
-      />
+          <ModelFormModal
+            isOpen={isModelModalOpen}
+            brandsList={brands}
+            selectedBrandId={modelTargetBrandId}
+            onClose={() => setIsModelModalOpen(false)}
+            onSubmit={handleCreateModel}
+          />
+        </>
+      )}
     </div>
   );
 };

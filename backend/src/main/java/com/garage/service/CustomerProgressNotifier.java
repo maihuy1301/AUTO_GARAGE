@@ -67,10 +67,6 @@ public class CustomerProgressNotifier {
                 title = "Xe đang được sửa chữa";
                 detail = "Kỹ thuật viên đang thực hiện sửa chữa xe của bạn.";
             }
-            case "CHO_KH_DUYET" -> {
-                title = "Xe đang chờ bạn xác nhận";
-                detail = "Việc sửa chữa đang chờ bạn xác nhận nội dung phát sinh. Vui lòng liên hệ garage để được hỗ trợ.";
-            }
             case "TAM_DUNG" -> {
                 title = "Sửa chữa đang tạm dừng";
                 detail = "Việc sửa chữa xe đang tạm dừng. Vui lòng liên hệ garage để biết thêm chi tiết.";

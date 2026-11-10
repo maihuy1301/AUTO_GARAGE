@@ -47,7 +47,7 @@ class CustomerProgressNotifierTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"CHO_XU_LY", "DA_PHAN_CONG", "DANG_SUA", "CHO_KH_DUYET", "TAM_DUNG", "HOAN_TAT", "HUY"})
+    @ValueSource(strings = {"CHO_XU_LY", "DA_PHAN_CONG", "DANG_SUA", "TAM_DUNG", "HOAN_TAT", "HUY"})
     void repairStagesNotifyTheVehicleOwnerWithBranch(String status) {
         order.setTrangThai(status);
         notifier.repairChanged(order, null);

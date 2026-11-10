@@ -3,6 +3,7 @@ import { RoleType } from './role.types';
 export interface LoginRequest {
   tenDangNhap: string;
   matKhau: string;
+  rememberMe?: boolean;
 }
 
 export interface LoginResponse {

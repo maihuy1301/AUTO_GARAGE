@@ -94,6 +94,10 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({
       setError('Đơn giá không được nhỏ hơn 0');
       return;
     }
+    if (thoiGianDuKien <= 0) {
+      setError('Thời gian dự kiến không hợp lệ');
+      return;
+    }
 
     try {
       setLoading(true);

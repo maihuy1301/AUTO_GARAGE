@@ -38,6 +38,7 @@ export const LoginForm: React.FC = () => {
       await login({
         tenDangNhap: trimmedUser,
         matKhau,
+        rememberMe,
       });
       navigate(from, { replace: true });
     } catch (err: unknown) {

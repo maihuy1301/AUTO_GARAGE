@@ -193,6 +193,10 @@ public class ServiceCatalogService {
         LoaiDichVu category = loaiDichVuRepository.findById(request.getMaLoaiDichVu())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy loại dịch vụ với ID: " + request.getMaLoaiDichVu()));
 
+        if (request.getThoiGianDuKien() != null && request.getThoiGianDuKien() <= 0) {
+            throw new BadRequestException("Thời gian dự kiến không hợp lệ");
+        }
+
         DichVu dichVu = new DichVu();
         dichVu.setTenDichVu(request.getTenDichVu().trim());
         dichVu.setLoaiDichVu(category);
@@ -216,6 +220,10 @@ public class ServiceCatalogService {
 
         LoaiDichVu category = loaiDichVuRepository.findById(request.getMaLoaiDichVu())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy loại dịch vụ với ID: " + request.getMaLoaiDichVu()));
+
+        if (request.getThoiGianDuKien() != null && request.getThoiGianDuKien() <= 0) {
+            throw new BadRequestException("Thời gian dự kiến không hợp lệ");
+        }
 
         dichVu.setTenDichVu(request.getTenDichVu().trim());
         dichVu.setLoaiDichVu(category);

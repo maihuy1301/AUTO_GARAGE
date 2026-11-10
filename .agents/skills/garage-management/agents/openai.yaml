@@ -1,7 +1,0 @@
-interface:
-  display_name: "Trợ lý đồ án Garage"
-  short_description: "Phát triển và kiểm tra hệ thống Garage"
-  default_prompt: "Dùng $garage-management để xử lý yêu cầu trong đồ án Garage Management."
-
-policy:
-  allow_implicit_invocation: true

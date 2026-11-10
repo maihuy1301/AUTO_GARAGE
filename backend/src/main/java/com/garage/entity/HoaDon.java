@@ -32,12 +32,6 @@ public class HoaDon {
     @Column(name = "TongTien", nullable = false, precision = 18, scale = 2)
     private BigDecimal tongTien = BigDecimal.ZERO;
 
-    @Column(name = "GiamGia", precision = 18, scale = 2)
-    private BigDecimal giamGia = BigDecimal.ZERO;
-
-    @Column(name = "Thue", precision = 18, scale = 2)
-    private BigDecimal thue = BigDecimal.ZERO;
-
     @Column(name = "ThanhTien", nullable = false, precision = 18, scale = 2)
     private BigDecimal thanhTien;
 
@@ -95,22 +89,6 @@ public class HoaDon {
 
     public void setTongTien(BigDecimal tongTien) {
         this.tongTien = tongTien;
-    }
-
-    public BigDecimal getGiamGia() {
-        return giamGia;
-    }
-
-    public void setGiamGia(BigDecimal giamGia) {
-        this.giamGia = giamGia;
-    }
-
-    public BigDecimal getThue() {
-        return thue;
-    }
-
-    public void setThue(BigDecimal thue) {
-        this.thue = thue;
     }
 
     public BigDecimal getThanhTien() {

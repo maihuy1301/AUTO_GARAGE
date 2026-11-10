@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/common/Button';
 import { invoiceService } from '../services/invoice.service';
+import { repairOrderService } from '@/features/repair-orders/services/repairOrder.service';
 import { InvoiceResponse } from '@/types/invoice.types';
 import { RepairOrderResponse } from '@/types/repair-order.types';
 
 interface GenerateInvoiceConfirmModalProps {
   isOpen: boolean;
   repairOrder: RepairOrderResponse | null;
+  allOrders?: RepairOrderResponse[];
   onClose: () => void;
   onSuccess: (invoice: InvoiceResponse) => void;
 }
@@ -14,25 +16,81 @@ interface GenerateInvoiceConfirmModalProps {
 export const GenerateInvoiceConfirmModal: React.FC<GenerateInvoiceConfirmModalProps> = ({
   isOpen,
   repairOrder,
+  allOrders,
   onClose,
   onSuccess,
 }) => {
-  const [giamGia, setGiamGia] = useState<number>(0);
-  const [thue, setThue] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const [checkingDetails, setCheckingDetails] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [totalItemsCount, setTotalItemsCount] = useState<number>(0);
+  const [totalPartsCount, setTotalPartsCount] = useState<number>(0);
+
+  useEffect(() => {
+    if (!isOpen || !repairOrder) return;
+    let isSubscribed = true;
+
+    const checkOrderDetails = async () => {
+      try {
+        setCheckingDetails(true);
+        setError(null);
+
+        // Gom các mã lệnh sửa chữa liên quan (lệnh gốc và các lệnh phát sinh)
+        const rootId = repairOrder.maPhieuCha || repairOrder.maPhieuSuaChua;
+        const targetIds = [rootId];
+        if (allOrders && allOrders.length > 0) {
+          allOrders.forEach((o) => {
+            if ((o.maPhieuCha === rootId || o.maPhieuSuaChua === rootId) && !targetIds.includes(o.maPhieuSuaChua)) {
+              targetIds.push(o.maPhieuSuaChua);
+            }
+          });
+        } else if (repairOrder.maPhieuSuaChua !== rootId) {
+          targetIds.push(repairOrder.maPhieuSuaChua);
+        }
+
+        let itemsCount = 0;
+        let partsCount = 0;
+
+        for (const orderId of targetIds) {
+          const [items, parts] = await Promise.all([
+            repairOrderService.getItems(orderId).catch(() => []),
+            repairOrderService.getParts(orderId).catch(() => []),
+          ]);
+
+          itemsCount += items.length;
+          partsCount += parts.length;
+        }
+
+        if (isSubscribed) {
+          setTotalItemsCount(itemsCount);
+          setTotalPartsCount(partsCount);
+          setCheckingDetails(false);
+        }
+      } catch (err) {
+        console.error('Lỗi khi kiểm tra dịch vụ của lệnh sửa chữa:', err);
+        if (isSubscribed) {
+          setCheckingDetails(false);
+        }
+      }
+    };
+
+    checkOrderDetails();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [isOpen, repairOrder, allOrders]);
 
   if (!isOpen || !repairOrder) return null;
+
+  const hasNoServices = !checkingDetails && totalItemsCount === 0 && totalPartsCount === 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setLoading(true);
       setError(null);
-      const res = await invoiceService.createFromRepairOrder(repairOrder.maPhieuSuaChua, {
-        giamGia: giamGia >= 0 ? giamGia : 0,
-        thue: thue >= 0 ? thue : 0,
-      });
+      const res = await invoiceService.createFromRepairOrder(repairOrder.maPhieuSuaChua, {});
       onSuccess(res);
     } catch (err: any) {
       console.error('Lỗi khi xuất hóa đơn:', err);
@@ -131,71 +189,59 @@ export const GenerateInvoiceConfirmModal: React.FC<GenerateInvoiceConfirmModalPr
               </div>
             )}
 
-            <div
-              style={{
-                backgroundColor: '#eff6ff',
-                border: '1px solid #bfdbfe',
-                borderRadius: '8px',
-                padding: '14px 16px',
-                marginBottom: '20px',
-                fontSize: '0.875rem',
-                color: '#1e40af',
-                lineHeight: 1.5,
-              }}
-            >
-              <div style={{ fontWeight: 600, marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
-                  info
+            {hasNoServices ? (
+              <div
+                style={{
+                  backgroundColor: '#fffbeb',
+                  border: '1px solid #fde68a',
+                  borderRadius: '8px',
+                  padding: '14px 16px',
+                  marginBottom: '20px',
+                  fontSize: '0.875rem',
+                  color: '#92400e',
+                  lineHeight: 1.5,
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '10px',
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '22px', color: '#b45309' }}>
+                  warning
                 </span>
-                Bạn có chắc chắn muốn xuất hóa đơn cho lệnh sửa chữa này?
+                <div>
+                  <div style={{ fontWeight: 600, marginBottom: '2px' }}>
+                    Lệnh sửa chữa chưa có dịch vụ / chi phí (0đ)
+                  </div>
+                  <div>
+                    Không thể xuất hóa đơn cho lệnh sửa chữa chưa có dịch vụ hoặc phụ tùng nào. Vui lòng kiểm tra lại dịch vụ trước khi lập hóa đơn.
+                  </div>
+                </div>
               </div>
-              <ul style={{ margin: '6px 0 0 0', paddingLeft: '20px' }}>
-                <li>Hóa đơn gồm dịch vụ, phụ tùng của lệnh sửa chữa và các phiếu phát sinh liên quan.</li>
-                <li>Sau khi xuất hóa đơn, tồn kho phụ tùng sẽ được cập nhật.</li>
-              </ul>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>
-                  Giảm giá (VNĐ)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  step="1000"
-                  value={giamGia}
-                  onChange={(e) => setGiamGia(Number(e.target.value))}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    borderRadius: '6px',
-                    border: '1px solid #cbd5e1',
-                    fontSize: '0.9rem',
-                  }}
-                />
+            ) : (
+              <div
+                style={{
+                  backgroundColor: '#eff6ff',
+                  border: '1px solid #bfdbfe',
+                  borderRadius: '8px',
+                  padding: '14px 16px',
+                  marginBottom: '20px',
+                  fontSize: '0.875rem',
+                  color: '#1e40af',
+                  lineHeight: 1.5,
+                }}
+              >
+                <div style={{ fontWeight: 600, marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+                    info
+                  </span>
+                  Bạn có chắc chắn muốn xuất hóa đơn cho lệnh sửa chữa này?
+                </div>
+                <ul style={{ margin: '6px 0 0 0', paddingLeft: '20px' }}>
+                  <li>Hóa đơn gồm dịch vụ, phụ tùng của lệnh sửa chữa và các phiếu phát sinh liên quan.</li>
+                  <li>Sau khi xuất hóa đơn, tồn kho phụ tùng sẽ được cập nhật.</li>
+                </ul>
               </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>
-                  Thuế VAT (VNĐ)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  step="1000"
-                  value={thue}
-                  onChange={(e) => setThue(Number(e.target.value))}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    borderRadius: '6px',
-                    border: '1px solid #cbd5e1',
-                    fontSize: '0.9rem',
-                  }}
-                />
-              </div>
-            </div>
+            )}
           </div>
 
           <div
@@ -211,8 +257,18 @@ export const GenerateInvoiceConfirmModal: React.FC<GenerateInvoiceConfirmModalPr
             <Button type="button" variant="secondary" onClick={onClose} disabled={loading}>
               Hủy
             </Button>
-            <Button type="submit" variant="primary" disabled={loading}>
-              {loading ? 'Đang xuất...' : 'Xác nhận xuất hóa đơn'}
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={loading || checkingDetails || hasNoServices}
+            >
+              {loading
+                ? 'Đang xuất...'
+                : checkingDetails
+                ? 'Đang kiểm tra...'
+                : hasNoServices
+                ? 'Không thể xuất hóa đơn (0đ)'
+                : 'Xác nhận xuất hóa đơn'}
             </Button>
           </div>
         </form>

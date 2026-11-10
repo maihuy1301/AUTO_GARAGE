@@ -178,7 +178,7 @@ export const VehiclesPage: React.FC = () => {
       {/* 4 Summary KPI Cards */}
       <div className="kpi-grid">
         <KpiCard
-          label={isAdmin ? 'Tổng Phương Tiện' : 'Xe Của Tôi'}
+          label={'Tổng Phương Tiện'}
           value={metrics.total}
           icon="directions_car"
           colorTheme="default"

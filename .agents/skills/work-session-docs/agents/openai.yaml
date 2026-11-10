@@ -1,7 +1,0 @@
-interface:
-  display_name: "Tài liệu phiên làm việc"
-  short_description: "Ghi log phiên làm việc Markdown có bằng chứng"
-  default_prompt: "Dùng $work-session-docs để ghi lại phiên làm việc hiện tại thành tài liệu Markdown."
-
-policy:
-  allow_implicit_invocation: true

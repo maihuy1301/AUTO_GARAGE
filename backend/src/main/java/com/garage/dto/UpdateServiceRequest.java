@@ -1,6 +1,7 @@
 package com.garage.dto;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -23,6 +24,7 @@ public class UpdateServiceRequest {
     @DecimalMin(value = "0.0", inclusive = true, message = "Đơn giá dịch vụ không được âm")
     private BigDecimal donGia;
 
+    @Min(value = 1, message = "Thời gian dự kiến không hợp lệ")
     private Integer thoiGianDuKien;
 
     private List<ServicePartItemRequest> defaultParts;
