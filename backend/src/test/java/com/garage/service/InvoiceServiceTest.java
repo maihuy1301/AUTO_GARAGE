@@ -264,7 +264,7 @@ class InvoiceServiceTest {
 
         when(hoaDonPhuTungRepository.save(any(HoaDonPhuTung.class))).thenReturn(hdPart1, hdPart2);
 
-        CreateInvoiceRequest req = new CreateInvoiceRequest(BigDecimal.ZERO, BigDecimal.ZERO);
+        CreateInvoiceRequest req = new CreateInvoiceRequest();
         InvoiceResponse res = invoiceService.createInvoice(601, req);
 
         assertThat(res).isNotNull();

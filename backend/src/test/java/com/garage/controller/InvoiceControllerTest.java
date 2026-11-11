@@ -79,7 +79,7 @@ class InvoiceControllerTest {
         return new InvoiceResponse(
                 id, orderId, 1, "Nguyễn Văn Khách",
                 1, "Chi Nhánh 1", 2, "Thu Ngân A",
-                new BigDecimal("600000.00"), BigDecimal.ZERO, BigDecimal.ZERO, new BigDecimal("600000.00"),
+                new BigDecimal("600000.00"), new BigDecimal("600000.00"),
                 BigDecimal.ZERO, new BigDecimal("600000.00"),
                 "CHUA_THANH_TOAN", LocalDateTime.now(),
                 List.of(new InvoiceServiceItemResponse(1, 10, "Thay dầu", 1, new BigDecimal("300000.00"), new BigDecimal("300000.00"))),
@@ -160,7 +160,7 @@ class InvoiceControllerTest {
         stubUser(recep, "ROLE_FRONT_DESK");
         String token = jwtService.generateToken("receptionist", List.of("ROLE_FRONT_DESK"));
 
-        CreateInvoiceRequest req = new CreateInvoiceRequest(new BigDecimal("50000.00"), BigDecimal.ZERO);
+        CreateInvoiceRequest req = new CreateInvoiceRequest();
         when(invoiceService.createInvoice(eq(601), any(CreateInvoiceRequest.class)))
                 .thenReturn(sampleInvoice(701, 601));
 
