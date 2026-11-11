@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { ReceptionResponse } from '@/types/reception.types';
 import { AppointmentResponse } from '@/types/appointment.types';
 import { RepairOrderResponse } from '@/types/repair-order.types';
@@ -13,6 +14,9 @@ import { SelectAppointmentCheckInModal } from '../components/SelectAppointmentCh
 import { Button } from '@/components/common/Button';
 
 export const ReceptionPage: React.FC = () => {
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.includes('ROLE_ADMIN');
+
   const [receptions, setReceptions] = useState<ReceptionResponse[]>([]);
   const [repairOrders, setRepairOrders] = useState<RepairOrderResponse[]>([]);
   const [branches, setBranches] = useState<BranchResponse[]>([]);
@@ -107,8 +111,14 @@ export const ReceptionPage: React.FC = () => {
       }
 
       // Status
-      if (statusFilter !== 'ALL' && item.trangThai !== statusFilter) {
-        return false;
+      if (statusFilter !== 'ALL') {
+        if (statusFilter === 'DANG_SUA') {
+          if (item.trangThai !== 'DANG_SUA' && item.trangThai !== 'DANG_SUA_CHUA') {
+            return false;
+          }
+        } else if (item.trangThai !== statusFilter) {
+          return false;
+        }
       }
 
       // Branch
@@ -325,8 +335,8 @@ export const ReceptionPage: React.FC = () => {
 
         {/* Filter Controls */}
         <div className="filter-controls">
-          {/* Branch Filter */}
-          {branches.length > 0 && (
+          {/* Branch Filter (Admin only) */}
+          {isAdmin && branches.length > 1 && (
             <select
               className="filter-select"
               value={branchFilter}
@@ -355,7 +365,6 @@ export const ReceptionPage: React.FC = () => {
             <option value="CHO_XU_LY">Chờ xử lý</option>
             <option value="DANG_XU_LY">Đang xử lý</option>
             <option value="CHO_SUA_CHUA">Chờ sửa chữa</option>
-            <option value="DANG_SUA_CHUA">Đang sửa chữa</option>
             <option value="DANG_SUA">Đang sửa chữa</option>
             <option value="HOAN_TAT">Hoàn tất</option>
             <option value="DA_BAN_GIAO">Đã bàn giao</option>

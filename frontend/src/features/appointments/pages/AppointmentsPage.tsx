@@ -12,6 +12,7 @@ import { CheckInModal } from '@/features/reception/components/CheckInModal';
 import { KpiCard } from '@/features/dashboard/components/KpiCard';
 import { Button } from '@/components/common/Button';
 import { wsClient } from '@/lib/websocket/websocket-client';
+import { isToday } from '../utils/date-utils';
 
 interface AppointmentRealtimeEvent {
   eventType?: string;
@@ -43,6 +44,7 @@ export const AppointmentsPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<AppointmentStatus | 'ALL'>('ALL');
   const [branchFilter, setBranchFilter] = useState<number | 'ALL'>('ALL');
   const [dateFilter, setDateFilter] = useState('');
+  const [onlyBookedToday, setOnlyBookedToday] = useState(false);
 
   // Modal states
   const [selectedDetail, setSelectedDetail] = useState<AppointmentResponse | null>(null);
@@ -145,9 +147,19 @@ export const AppointmentsPage: React.FC = () => {
     return () => clearTimeout(timer);
   }, [successToast]);
 
+  // Count appointments booked today
+  const bookedTodayCount = useMemo(() => {
+    return appointments.filter((a) => isToday(a.ngayDat)).length;
+  }, [appointments]);
+
   // Filtered appointments
   const filteredAppointments = useMemo(() => {
     return appointments.filter((app) => {
+      // Filter: Chỉ lịch đặt hôm nay
+      if (onlyBookedToday && !isToday(app.ngayDat)) {
+        return false;
+      }
+
       // Search
       if (search.trim()) {
         const query = search.toLowerCase().trim();
@@ -195,7 +207,7 @@ export const AppointmentsPage: React.FC = () => {
       const timeB = b.ngayDat ? new Date(b.ngayDat).getTime() : (b.thoiGianHen ? new Date(b.thoiGianHen).getTime() : 0);
       return timeB - timeA || (b.maDatLich - a.maDatLich);
     });
-  }, [appointments, search, statusFilter, branchFilter, dateFilter]);
+  }, [appointments, search, statusFilter, branchFilter, dateFilter, onlyBookedToday]);
 
   // KPI Calculations
   const kpis = useMemo(() => {
@@ -415,6 +427,53 @@ export const AppointmentsPage: React.FC = () => {
         </div>
 
         <div className="filter-controls">
+          {/* Quick Filter: Đặt hôm nay */}
+          <button
+            type="button"
+            className={`btn ${onlyBookedToday ? 'btn-primary' : 'btn-secondary'}`}
+            style={{
+              padding: '6px 14px',
+              fontSize: '0.85rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontWeight: 600,
+              borderRadius: 'var(--radius-md)',
+              border: onlyBookedToday ? 'none' : '1px solid var(--color-outline-variant)',
+              backgroundColor: onlyBookedToday ? 'var(--color-primary)' : 'var(--color-surface-container-low)',
+              color: onlyBookedToday ? '#ffffff' : 'var(--color-on-surface)',
+              transition: 'all 0.2s ease',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}
+            onClick={() => setOnlyBookedToday((prev) => !prev)}
+            title={onlyBookedToday ? 'Bỏ lọc để xem tất cả lịch' : 'Chỉ xem lịch hẹn được đặt trong hôm nay'}
+          >
+            <span
+              className="material-symbols-outlined"
+              style={{
+                fontSize: '18px',
+                color: onlyBookedToday ? '#ffffff' : 'var(--color-primary)',
+              }}
+            >
+              bolt
+            </span>
+            <span>Đặt hôm nay</span>
+            <span
+              style={{
+                backgroundColor: onlyBookedToday ? 'rgba(255, 255, 255, 0.25)' : 'var(--color-primary-container)',
+                color: onlyBookedToday ? '#ffffff' : 'var(--color-on-primary-container)',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                padding: '1px 7px',
+                borderRadius: '999px',
+                marginLeft: '2px',
+              }}
+            >
+              {bookedTodayCount}
+            </span>
+          </button>
+
           {/* Status Filter */}
           <select
             className="filter-select"
@@ -428,8 +487,8 @@ export const AppointmentsPage: React.FC = () => {
             ))}
           </select>
 
-          {/* Branch Filter */}
-          {branches.length > 1 && (
+          {/* Branch Filter (Admin only) */}
+          {isAdmin && branches.length > 1 && (
             <select
               className="filter-select"
               value={branchFilter}

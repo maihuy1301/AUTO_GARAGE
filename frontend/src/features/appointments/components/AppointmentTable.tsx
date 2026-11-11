@@ -2,6 +2,7 @@ import React from 'react';
 import { AppointmentResponse, AppointmentStatusLabels, AppointmentStatusTone } from '@/types/appointment.types';
 import { EmptyState } from '@/components/common/EmptyState';
 import { ActionDropdown } from '@/components/common/ActionDropdown';
+import { isToday } from '../utils/date-utils';
 
 interface AppointmentTableProps {
   appointments: AppointmentResponse[];
@@ -114,20 +115,44 @@ export const AppointmentTable: React.FC<AppointmentTableProps> = ({
                 <tr key={item.maDatLich}>
                   {/* Mã lịch */}
                   <td style={{ textAlign: 'center' }}>
-                    <span
-                      style={{
-                        fontFamily: 'monospace',
-                        fontWeight: 700,
-                        fontSize: '0.8rem',
-                        backgroundColor: 'var(--color-surface-container)',
-                        color: 'var(--color-primary)',
-                        padding: '3px 8px',
-                        borderRadius: 'var(--radius-sm)',
-                        display: 'inline-block',
-                      }}
-                    >
-                      #{item.maDatLich}
-                    </span>
+                    <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                      <span
+                        style={{
+                          fontFamily: 'monospace',
+                          fontWeight: 700,
+                          fontSize: '0.8rem',
+                          backgroundColor: 'var(--color-surface-container)',
+                          color: 'var(--color-primary)',
+                          padding: '3px 8px',
+                          borderRadius: 'var(--radius-sm)',
+                          display: 'inline-block',
+                        }}
+                      >
+                        #{item.maDatLich}
+                      </span>
+                      {isToday(item.ngayDat) && (
+                        <span
+                          style={{
+                            fontSize: '0.675rem',
+                            fontWeight: 700,
+                            color: '#c2410c',
+                            backgroundColor: '#ffedd5',
+                            padding: '1px 6px',
+                            borderRadius: '999px',
+                            whiteSpace: 'nowrap',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '2px',
+                          }}
+                          title="Lịch hẹn cần xác nhận hôm nay"
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: '11px' }}>
+                            bolt
+                          </span>
+                          Đặt hôm nay
+                        </span>
+                      )}
+                    </div>
                   </td>
 
                   {/* Khách hàng */}

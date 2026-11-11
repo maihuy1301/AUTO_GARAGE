@@ -21,6 +21,7 @@ import { InvoiceResponse } from '@/types/invoice.types';
 export const RepairOrdersPage: React.FC = () => {
   const { user } = useAuth();
   const userRoles = user?.roles || [];
+  const isAdmin = userRoles.includes('ROLE_ADMIN');
   const isManagerOrAdmin = userRoles.includes('ROLE_ADMIN') || userRoles.includes('ROLE_MANAGER');
   const isFrontDesk = userRoles.includes('ROLE_FRONT_DESK');
   const isTechnician = userRoles.includes('ROLE_TECHNICIAN') && !isManagerOrAdmin && !isFrontDesk;
@@ -415,8 +416,8 @@ export const RepairOrdersPage: React.FC = () => {
             </div>
 
             <div className="filter-controls">
-              {/* Branch Filter */}
-              {branches.length > 0 && !isTechnician && (
+              {/* Branch Filter (Admin only) */}
+              {isAdmin && branches.length > 1 && (
                 <select
                   className="filter-select"
                   value={branchFilter}
@@ -443,7 +444,6 @@ export const RepairOrdersPage: React.FC = () => {
                 <option value="CHO_XU_LY">Chờ xử lý</option>
                 <option value="DA_PHAN_CONG">Đã phân công</option>
                 <option value="DANG_SUA">Đang sửa chữa</option>
-                <option value="CHO_KH_DUYET">Chờ KH duyệt</option>
                 <option value="TAM_DUNG">Tạm dừng</option>
                 <option value="HOAN_TAT">Hoàn tất</option>
                 <option value="HUY">Đã hủy</option>
