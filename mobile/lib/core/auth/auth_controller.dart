@@ -25,16 +25,23 @@ class AuthController extends ChangeNotifier {
     Duration minimumSplashDuration = Duration.zero,
   }) async {
     final startedAt = DateTime.now();
-    _session = await _repository.restoreSession();
+    try {
+      _session = await _repository
+          .restoreSession()
+          .timeout(const Duration(seconds: 4), onTimeout: () => null);
+    } catch (e, stack) {
+      debugPrint('restoreSession error: $e\n$stack');
+      _session = null;
+    } finally {
+      final elapsed = DateTime.now().difference(startedAt);
+      final remaining = minimumSplashDuration - elapsed;
+      if (remaining > Duration.zero) {
+        await Future<void>.delayed(remaining);
+      }
 
-    final elapsed = DateTime.now().difference(startedAt);
-    final remaining = minimumSplashDuration - elapsed;
-    if (remaining > Duration.zero) {
-      await Future<void>.delayed(remaining);
+      _isInitialized = true;
+      notifyListeners();
     }
-
-    _isInitialized = true;
-    notifyListeners();
   }
 
   Future<bool> login({

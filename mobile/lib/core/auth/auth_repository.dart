@@ -13,32 +13,36 @@ class AuthRepository {
   final SecureSessionStorage _sessionStorage;
 
   Future<AuthSession?> restoreSession() async {
-    final token = await _sessionStorage.readToken();
-    if (token == null || token.isEmpty) return null;
-
     try {
-      final payload = JwtDecoder.decode(token);
-      if (payload.isExpired) {
+      final token = await _sessionStorage.readToken();
+      if (token == null || token.isEmpty) return null;
+
+      try {
+        final payload = JwtDecoder.decode(token);
+        if (payload.isExpired) {
+          await _sessionStorage.clear();
+          return null;
+        }
+        final response = await _apiClient.dio.get<Map<String, dynamic>>(
+          '/auth/me',
+        );
+        final currentUser = response.data?['data'];
+        return _sessionFromToken(
+          token,
+          userData: currentUser is Map<String, dynamic> ? currentUser : null,
+        );
+      } on DioException catch (error) {
+        if (error.response?.statusCode == 401 ||
+            error.response?.statusCode == 403) {
+          await _sessionStorage.clear();
+          return null;
+        }
+        return _sessionFromToken(token);
+      } on FormatException {
         await _sessionStorage.clear();
         return null;
       }
-      final response = await _apiClient.dio.get<Map<String, dynamic>>(
-        '/auth/me',
-      );
-      final currentUser = response.data?['data'];
-      return _sessionFromToken(
-        token,
-        userData: currentUser is Map<String, dynamic> ? currentUser : null,
-      );
-    } on DioException catch (error) {
-      if (error.response?.statusCode == 401 ||
-          error.response?.statusCode == 403) {
-        await _sessionStorage.clear();
-        return null;
-      }
-      return _sessionFromToken(token);
-    } on FormatException {
-      await _sessionStorage.clear();
+    } catch (_) {
       return null;
     }
   }

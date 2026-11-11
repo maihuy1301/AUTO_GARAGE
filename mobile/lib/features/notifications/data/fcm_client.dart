@@ -25,7 +25,7 @@ class FcmClient implements PushClient {
   Future<void> initialize() async {
     if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
     try {
-      await Firebase.initializeApp();
+      await Firebase.initializeApp().timeout(const Duration(seconds: 3));
       await FirebaseMessaging.instance.setAutoInitEnabled(false);
       FirebaseMessaging.onBackgroundMessage(garageBackgroundMessage);
       _available = true;
