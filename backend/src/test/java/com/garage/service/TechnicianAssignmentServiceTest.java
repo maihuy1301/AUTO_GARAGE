@@ -78,6 +78,8 @@ class TechnicianAssignmentServiceTest {
     private VaiTro roleFrontDesk;
     private NguoiDungVaiTro userRoleFrontDesk;
 
+    private NguoiDung userAdmin;
+
     private PhanCong assignmentPending;
     private PhanCong assignmentApproved;
 
@@ -150,6 +152,13 @@ class TechnicianAssignmentServiceTest {
         roleFrontDesk.setTenVaiTro("ROLE_FRONT_DESK");
         userRoleFrontDesk = new NguoiDungVaiTro(userReceptionist, roleFrontDesk);
 
+        // Admin
+        userAdmin = new NguoiDung();
+        userAdmin.setMaNguoiDung(1);
+        userAdmin.setTenDangNhap("admin");
+        userAdmin.setHoTen("Hệ Thống Admin");
+        userAdmin.setTrangThai(true);
+
         // Assignments
         assignmentPending = new PhanCong();
         assignmentPending.setMaPhanCong(801);
@@ -179,7 +188,7 @@ class TechnicianAssignmentServiceTest {
         SecurityContextHolder.setContext(ctx);
 
         lenient().when(nhanVienRepository.findByNguoiDungMaNguoiDung(user.getMaNguoiDung()))
-                .thenReturn(Optional.of(emp));
+                .thenReturn(Optional.ofNullable(emp));
     }
 
     // ==========================================
@@ -494,6 +503,71 @@ class TechnicianAssignmentServiceTest {
         assertThat(res).isNotNull();
         assertThat(assignmentPending.getTrangThai()).isEqualTo("DA_DUYET");
         assertThat(childPending.getTrangThai()).isEqualTo("DA_DUYET");
+        assertThat(childOrder.getTrangThai()).isEqualTo("DA_PHAN_CONG");
+    }
+
+    @Test
+    void admin_createAssignment_success_resolvesStaffFromBranchAndAutomaticallyApproved() {
+        stubAuth(userAdmin, null, "ROLE_ADMIN");
+
+        when(phieuSuaChuaRepository.findById(601)).thenReturn(Optional.of(order1));
+        when(branchAuthorizationService.isAllowedBranch(1)).thenReturn(true);
+        when(nhanVienRepository.findById(100)).thenReturn(Optional.of(tech1));
+        when(nguoiDungVaiTroRepository.findByNguoiDungMaNguoiDung(10)).thenReturn(List.of(userRoleTech));
+        when(phanCongRepository.existsByPhieuSuaChuaMaPhieuSuaChuaAndNhanVienDuocPhanCongMaNhanVien(601, 100)).thenReturn(false);
+        when(nhanVienRepository.findByChiNhanhMaChiNhanh(1)).thenReturn(List.of(manager1));
+        when(phanCongRepository.save(any(PhanCong.class))).thenAnswer(i -> {
+            PhanCong p = i.getArgument(0);
+            p.setMaPhanCong(805);
+            return p;
+        });
+
+        CreateAssignmentRequest req = new CreateAssignmentRequest(100, "Admin giao việc trực tiếp");
+        AssignmentResponse res = technicianAssignmentService.createAssignment(601, req);
+
+        assertThat(res).isNotNull();
+        assertThat(res.getMaPhanCong()).isEqualTo(805);
+        assertThat(res.getTrangThai()).isEqualTo("DA_DUYET");
+        assertThat(res.getMaNguoiPhanCong()).isEqualTo(20);
+        assertThat(res.getMaNguoiDuyet()).isEqualTo(20);
+        assertThat(res.getThoiGianDuyet()).isNotNull();
+        assertThat(order1.getTrangThai()).isEqualTo("DA_PHAN_CONG");
+        verify(phieuSuaChuaRepository).save(order1);
+    }
+
+    @Test
+    void admin_approveAssignment_resolvesStaffFromBranchAndSyncsToChildOrder() {
+        stubAuth(userAdmin, null, "ROLE_ADMIN");
+
+        when(phieuSuaChuaRepository.findById(601)).thenReturn(Optional.of(order1));
+        when(branchAuthorizationService.isAllowedBranch(1)).thenReturn(true);
+        when(phanCongRepository.findByMaPhanCongAndPhieuSuaChuaMaPhieuSuaChua(801, 601))
+                .thenReturn(Optional.of(assignmentPending));
+        when(nhanVienRepository.findByChiNhanhMaChiNhanh(1)).thenReturn(List.of(manager1));
+
+        PhieuSuaChua childOrder = new PhieuSuaChua();
+        childOrder.setMaPhieuSuaChua(602);
+        childOrder.setPhieuCha(order1);
+        childOrder.setChiNhanh(branch1);
+        childOrder.setTrangThai("CHO_XU_LY");
+
+        PhanCong childPending = new PhanCong();
+        childPending.setMaPhanCong(803);
+        childPending.setPhieuSuaChua(childOrder);
+        childPending.setNhanVienDuocPhanCong(tech1);
+        childPending.setTrangThai("CHO_DUYET");
+
+        when(phieuSuaChuaRepository.findByPhieuChaMaPhieuSuaChua(601)).thenReturn(List.of(childOrder));
+        when(phanCongRepository.findByPhieuSuaChuaMaPhieuSuaChua(602)).thenReturn(List.of(childPending));
+        when(phanCongRepository.save(any(PhanCong.class))).thenAnswer(i -> i.getArgument(0));
+
+        AssignmentResponse res = technicianAssignmentService.approveAssignment(601, 801);
+
+        assertThat(res).isNotNull();
+        assertThat(assignmentPending.getTrangThai()).isEqualTo("DA_DUYET");
+        assertThat(assignmentPending.getNguoiDuyet()).isEqualTo(manager1);
+        assertThat(childPending.getTrangThai()).isEqualTo("DA_DUYET");
+        assertThat(childPending.getNguoiDuyet()).isEqualTo(manager1);
         assertThat(childOrder.getTrangThai()).isEqualTo("DA_PHAN_CONG");
     }
 }
