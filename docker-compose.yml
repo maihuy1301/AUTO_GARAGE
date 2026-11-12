@@ -1,3 +1,5 @@
+name: garage_management
+
 services:
   # ==========================================================
   # SQL Server 2022 Database Container (Infrastructure)

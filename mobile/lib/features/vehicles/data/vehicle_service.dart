@@ -16,6 +16,7 @@ abstract interface class VehicleGateway {
   );
   Future<void> uploadVehicleImage(int vehicleId, String filePath);
   Future<Uint8List?> loadVehicleImage(int vehicleId);
+  Future<VehicleAiRecognitionResult> recognizeVehicle(String imagePath);
 }
 
 class VehicleException implements Exception {
@@ -156,6 +157,32 @@ class VehicleService implements VehicleGateway {
     } on DioException catch (error) {
       if (error.response?.statusCode == 404) return null;
       throw VehicleException(_messageFor(error));
+    }
+  }
+
+  @override
+  Future<VehicleAiRecognitionResult> recognizeVehicle(String imagePath) async {
+    try {
+      final fileName = imagePath.split(RegExp(r'[/\\]')).last;
+      final response = await _apiClient.dio.post<Map<String, dynamic>>(
+        '/vehicles/recognize',
+        data: FormData.fromMap({
+          'file': await MultipartFile.fromFile(imagePath, filename: fileName),
+        }),
+      );
+      final data = response.data?['data'];
+      if (response.data?['success'] != true || data is! Map<String, dynamic>) {
+        throw VehicleException(
+          response.data?['message']?.toString() ?? 'Nhận diện xe thất bại.',
+        );
+      }
+      return VehicleAiRecognitionResult.fromJson(data);
+    } on VehicleException {
+      rethrow;
+    } on DioException catch (error) {
+      throw VehicleException(_messageFor(error));
+    } on Object {
+      throw const VehicleException('Không thể nhận diện xe.');
     }
   }
 

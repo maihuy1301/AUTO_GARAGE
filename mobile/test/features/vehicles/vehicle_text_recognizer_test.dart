@@ -52,11 +52,34 @@ void main() {
       extractVehicleText('VIN: 1HGCM82633A00435O', VehicleScanTarget.vin).vin,
       isNull,
     );
+    // Dãy 17 chữ số thuần túy (số tài khoản, mã vạch) hoặc 17 chữ cái bị từ chối
+    expect(
+      extractVehicleText('12345678901234567', VehicleScanTarget.vin).vin,
+      isNull,
+    );
+    expect(
+      extractVehicleText('ABCDEFGHJKLMNPRST', VehicleScanTarget.vin).vin,
+      isNull,
+    );
     expect(
       extractVehicleText(
         'ODO 9,999,999 km',
         VehicleScanTarget.odometer,
       ).odometer,
+      isNull,
+    );
+    // Con số trơ trọi không có chữ ODO hoặc đơn vị km bị từ chối hoàn toàn
+    expect(
+      extractVehicleText('12500', VehicleScanTarget.odometer).odometer,
+      isNull,
+    );
+    // Mã tỉnh không hợp lệ (< 11) hoặc số 00000 bị từ chối
+    expect(
+      extractVehicleText('05A-12345', VehicleScanTarget.plate).plate,
+      isNull,
+    );
+    expect(
+      extractVehicleText('30A-00000', VehicleScanTarget.plate).plate,
       isNull,
     );
   });

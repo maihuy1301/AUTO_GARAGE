@@ -356,7 +356,7 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
       if (mounted && version == _imageVersion) {
         setState(
           () => _recognitionError =
-              'Không thể nhận diện ảnh trên thiết bị. Vui lòng chọn hãng và dòng xe thủ công.',
+              'Không thể nhận diện ảnh xe trên thiết bị. Vui lòng chọn hãng và dòng xe thủ công.',
         );
       }
     } finally {
@@ -367,18 +367,93 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
   }
 
   Future<void> _applyRecognition() async {
-    final suggestion = _recognition?.suggestion;
-    if (suggestion == null || !_recognition!.accepted) return;
+    final rec = _recognition;
+    if (rec == null) return;
+
+    // Nếu mô hình nhận diện là xe lạ / không chắc chắn -> gán vào loại xe "Khác"
+    if (rec.isOther || !rec.accepted || rec.suggestion == null) {
+      final otherBrand = _brands.where(
+        (b) =>
+            b.name.toLowerCase().contains('khác') ||
+            b.name.toLowerCase() == 'other',
+      );
+      if (otherBrand.isNotEmpty) {
+        final otherBrandId = otherBrand.first.id;
+        setState(() => _isLoadingModels = true);
+        try {
+          final models = await widget.gateway.loadModels(otherBrandId);
+          if (!mounted) return;
+          final otherModel = models.where(
+            (m) =>
+                m.name.toLowerCase().contains('khác') ||
+                m.name.toLowerCase() == 'other',
+          );
+          setState(() {
+            _selectedBrandId = otherBrandId;
+            _models = models;
+            _selectedModelId =
+                otherModel.isNotEmpty ? otherModel.first.id : null;
+            _catalogError = null;
+            _recognitionError = null;
+          });
+        } on VehicleException catch (error) {
+          if (mounted) setState(() => _recognitionError = error.message);
+        } finally {
+          if (mounted) setState(() => _isLoadingModels = false);
+        }
+      } else {
+        setState(
+          () => _recognitionError =
+              'Danh mục garage chưa có hãng "Khác". Vui lòng chọn thủ công.',
+        );
+      }
+      return;
+    }
+
+    final suggestion = rec.suggestion!;
     final brand = _brands.where(
       (item) => _sameCatalogName(item.name, suggestion.make),
     );
     if (brand.isEmpty) {
-      setState(
-        () => _recognitionError =
-            'Hãng ${suggestion.make} chưa có trong danh mục garage. Vui lòng chọn thủ công.',
+      // Nếu hãng nhận diện chưa có trong database -> fallback về "Khác"
+      final otherBrand = _brands.where(
+        (b) =>
+            b.name.toLowerCase().contains('khác') ||
+            b.name.toLowerCase() == 'other',
       );
+      if (otherBrand.isNotEmpty) {
+        final otherBrandId = otherBrand.first.id;
+        setState(() => _isLoadingModels = true);
+        try {
+          final models = await widget.gateway.loadModels(otherBrandId);
+          if (!mounted) return;
+          final otherModel = models.where(
+            (m) =>
+                m.name.toLowerCase().contains('khác') ||
+                m.name.toLowerCase() == 'other',
+          );
+          setState(() {
+            _selectedBrandId = otherBrandId;
+            _models = models;
+            _selectedModelId =
+                otherModel.isNotEmpty ? otherModel.first.id : null;
+            _catalogError = null;
+            _recognitionError = null;
+          });
+        } on VehicleException catch (error) {
+          if (mounted) setState(() => _recognitionError = error.message);
+        } finally {
+          if (mounted) setState(() => _isLoadingModels = false);
+        }
+      } else {
+        setState(
+          () => _recognitionError =
+              'Hãng ${suggestion.make} chưa có trong danh mục garage. Vui lòng chọn thủ công.',
+        );
+      }
       return;
     }
+
     final version = _imageVersion;
     final previousBrandId = _selectedBrandId;
     final previousModelId = _selectedModelId;
@@ -394,17 +469,21 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
       final matched = models.where(
         (item) => _sameCatalogName(item.name, suggestion.model),
       );
-      if (matched.isEmpty) {
-        setState(
-          () => _recognitionError =
-              'Dòng ${suggestion.model} chưa có trong danh mục garage. Vui lòng chọn thủ công.',
-        );
-        return;
-      }
+      final modelId = matched.isNotEmpty
+          ? matched.first.id
+          : models
+              .where(
+                (m) =>
+                    m.name.toLowerCase().contains('khác') ||
+                    m.name.toLowerCase() == 'other',
+              )
+              .firstOrNull
+              ?.id;
+
       setState(() {
         _selectedBrandId = brand.first.id;
         _models = models;
-        _selectedModelId = matched.first.id;
+        _selectedModelId = modelId;
         _catalogError = null;
         _recognitionError = null;
       });
@@ -1035,20 +1114,19 @@ class _VehicleFormSheetState extends State<_VehicleFormSheet> {
               if (_recognition != null) ...[
                 const SizedBox(height: 8),
                 Text(
-                  _recognition!.accepted
-                      ? 'Thông tin xe nhận diện được: ${_recognition!.suggestion!.make} ${_recognition!.suggestion!.model}. Hãy kiểm tra trước khi áp dụng.'
-                      : 'AutoVision chưa xác định được hãng và dòng xe từ ảnh này. Hãy chụp rõ toàn xe hoặc chọn thủ công.',
+                  _recognition!.isOther || _recognition!.suggestion == null
+                      ? 'Không nhận diện được xe (đã liệt kê vào loại xe: Khác). Hãy kiểm tra trước khi áp dụng.'
+                      : 'Nhận diện được: ${_recognition!.suggestion!.make} ${_recognition!.suggestion!.model} (${(_recognition!.suggestion!.confidence * 100).toStringAsFixed(0)}%). Hãy kiểm tra trước khi áp dụng.',
                   key: const ValueKey('vehicle-autovision-result'),
                 ),
-                if (_recognition!.accepted)
-                  TextButton(
-                    key: const ValueKey('vehicle-autovision-apply'),
-                    onPressed:
-                        _isLoadingBrands || _isLoadingModels || _isSubmitting
-                        ? null
-                        : _applyRecognition,
-                    child: const Text('Áp dụng thông tin hãng và dòng xe'),
-                  ),
+                TextButton(
+                  key: const ValueKey('vehicle-autovision-apply'),
+                  onPressed:
+                      _isLoadingBrands || _isLoadingModels || _isSubmitting
+                          ? null
+                          : _applyRecognition,
+                  child: const Text('Áp dụng thông tin hãng và dòng xe'),
+                ),
               ],
               if (_recognitionError != null)
                 Text(

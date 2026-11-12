@@ -6,8 +6,15 @@ param(
 $ErrorActionPreference = 'Stop'
 
 try {
-    $adbCommand = Get-Command adb -ErrorAction Stop
-    $deviceLines = & $adbCommand.Source devices
+    $adbCommand = Get-Command adb -ErrorAction SilentlyContinue
+    if ($adbCommand) {
+        $adbExe = $adbCommand.Source
+    } elseif (Test-Path "$env:LOCALAPPDATA\Android\sdk\platform-tools\adb.exe") {
+        $adbExe = "$env:LOCALAPPDATA\Android\sdk\platform-tools\adb.exe"
+    } else {
+        throw 'Khong tim thay adb. Kiem tra Android SDK platform-tools.'
+    }
+    $deviceLines = & $adbExe devices
     if ($LASTEXITCODE -ne 0) { throw 'ADB khong liet ke duoc thiet bi.' }
     $ready = @($deviceLines | ForEach-Object {
         if ($_ -match '^(\S+)\s+device\s*$') { $Matches[1] }
@@ -18,10 +25,13 @@ try {
         }
     } else {
         $phones = @($ready | Where-Object { $_ -notlike 'emulator-*' })
-        if ($phones.Count -ne 1) {
-            throw 'Can dung mot dien thoai da cho phep USB debugging, hoac truyen -DeviceId tu adb devices.'
+        if ($phones.Count -eq 1) {
+            $DeviceId = $phones[0]
+        } elseif ($ready.Count -ge 1) {
+            $DeviceId = $ready[0]
+        } else {
+            throw 'Khong tim thay thiet bi Android hoac may ao nao dang chay (adb devices).'
         }
-        $DeviceId = $phones[0]
     }
 
     # Public, read-only API: confirms both routing and backend response without credentials.
@@ -35,9 +45,9 @@ try {
         throw "Backend chua san sang tai cong $Port. Khoi dong backend va kiem tra database, sau do chay lai."
     }
 
-    & $adbCommand.Source -s $DeviceId reverse "tcp:$Port" "tcp:$Port" | Out-Null
+    & $adbExe -s $DeviceId reverse "tcp:$Port" "tcp:$Port" | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'Khong tao duoc duong ket noi USB.' }
-    $mappings = & $adbCommand.Source -s $DeviceId reverse --list
+    $mappings = & $adbExe -s $DeviceId reverse --list
     if ($LASTEXITCODE -ne 0 -or ($mappings -join "`n") -notmatch "\btcp:$Port\s+tcp:$Port\b") {
         throw 'ADB chua xac nhan chuyen tiep cong. Thu cam lai cap USB.'
     }

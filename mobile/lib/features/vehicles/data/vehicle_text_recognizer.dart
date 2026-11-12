@@ -82,15 +82,26 @@ T? _single<T>(Set<T> values) => values.length == 1 ? values.single : null;
 String? _findPlate(List<String> lines) {
   final candidates = <String>{};
   final pattern = RegExp(
-    r'(^|[^A-Z0-9])(\d{2}[A-Z]{1,2})[-. ]?(\d{3}[. ]?\d{2}|\d{4})(?=$|[^A-Z0-9])',
+    r'(^|[^A-Z0-9])(\d{2}[A-Z]{1,2})[-. ]?(\d{3}[. ]?\d{2}|\d{4,5})(?=$|[^A-Z0-9])',
   );
   for (final line in lines) {
     for (final match in pattern.allMatches(line)) {
+      final prefix = match.group(2)!;
       final digits = match.group(3)!.replaceAll(RegExp(r'[^0-9]'), '');
-      candidates.add('${match.group(2)}-$digits');
+      if (_isValidPlateParts(prefix, digits)) {
+        candidates.add('$prefix-$digits');
+      }
     }
   }
   return _single(candidates);
+}
+
+bool _isValidPlateParts(String prefix, String digits) {
+  if (digits.length != 4 && digits.length != 5) return false;
+  if (RegExp(r'^0+$').hasMatch(digits)) return false;
+  final province = int.tryParse(prefix.substring(0, 2));
+  if (province == null || province < 11 || province > 99) return false;
+  return true;
 }
 
 String? _findVin(List<String> lines) {
@@ -98,41 +109,87 @@ String? _findVin(List<String> lines) {
   final pattern = RegExp(r'(^|[^A-Z0-9])([A-HJ-NPR-Z0-9]{17})(?=$|[^A-Z0-9])');
   for (final line in lines) {
     for (final match in pattern.allMatches(line)) {
-      candidates.add(match.group(2)!);
+      final candidate = match.group(2)!;
+      if (_isValidVin(candidate)) {
+        candidates.add(candidate);
+      }
     }
   }
   return _single(candidates);
 }
 
+bool _isValidVin(String vin) {
+  if (vin.length != 17) return false;
+  if (!RegExp(r'^[A-HJ-NPR-Z0-9]{17}$').hasMatch(vin)) return false;
+  // Chuẩn ISO 3779: VIN bắt buộc phải có cả chữ cái và chữ số (chặn dãy 17 số hoặc 17 chữ)
+  final letterCount = RegExp(r'[A-HJ-NPR-Z]').allMatches(vin).length;
+  final digitCount = RegExp(r'[0-9]').allMatches(vin).length;
+  if (letterCount < 2 || digitCount < 5) return false;
+  // 4 ký tự cuối (VIS - số thứ tự xuất xưởng vị trí 14-17) theo chuẩn VIN phải là chữ số
+  if (!RegExp(r'\d{4}$').hasMatch(vin)) return false;
+  // Chặn chuỗi lặp bất thường (ví dụ 11111111111111111)
+  if (RegExp(r'(.)\1{6,}').hasMatch(vin)) return false;
+  return true;
+}
+
 int? _findOdometer(List<String> lines) {
-  final candidates = <int>{};
-  final number = r'(\d{1,3}(?:[., ]\d{3})+|\d{3,7})';
-  final labeled = RegExp('(?:ODO|ODOMETER|SO\\s*KM)\\D{0,10}$number');
+  final labeledCandidates = <int>{};
+  final unitCandidates = <int>{};
+  const number = r'(\d{1,3}(?:[., ]\d{3})+|\d{1,7})';
+  final odoLabelOnly = RegExp(r'\b(?:ODO|ODOMETER|SO\s*KM)\b');
+  final labeledSameLine = RegExp(
+    '(?:\\bODO\\b|\\bODOMETER\\b|\\bSO\\s*KM\\b)\\D{0,10}$number(?:\\s*KM\\b)?',
+  );
   final withUnit = RegExp('$number\\s*KM\\b');
-  for (final line in lines) {
-    if (RegExp(r'\bTRIP\b').hasMatch(line)) continue;
-    final label = labeled.firstMatch(line);
-    if (label != null) {
-      final value = _parseOdometer(label.group(1)!);
-      if (value != null) candidates.add(value);
+  final excludedContext = RegExp(
+    r'\b(?:TRIP|RANGE|AVG|AVERAGE|FUEL|SPEED|RPM|TEMP|MAX|MIN|L/100|KM/L|KM/H|KM/KWH)\b',
+  );
+
+  for (var i = 0; i < lines.length; i++) {
+    final line = lines[i];
+    if (excludedContext.hasMatch(line)) continue;
+
+    final labelMatch = labeledSameLine.firstMatch(line);
+    if (labelMatch != null) {
+      final tail = line.substring(labelMatch.end).trimLeft();
+      if (!tail.startsWith('/H') && !tail.startsWith('/L')) {
+        final value = _parseOdometer(labelMatch.group(1)!);
+        if (value != null) labeledCandidates.add(value);
+      }
       continue;
     }
+
+    // Trường hợp chữ "ODO" nằm ở dòng trên và số km nằm ngay dòng dưới trên màn hình LCD
+    if (odoLabelOnly.hasMatch(line) && i + 1 < lines.length) {
+      final nextLine = lines[i + 1];
+      if (!excludedContext.hasMatch(nextLine)) {
+        final nextMatch = RegExp(
+          '^\\s*$number(?:\\s*KM\\b)?\\s*\$',
+        ).firstMatch(nextLine);
+        if (nextMatch != null) {
+          final value = _parseOdometer(nextMatch.group(1)!);
+          if (value != null) labeledCandidates.add(value);
+        }
+      }
+    }
+
     for (final match in withUnit.allMatches(line)) {
-      if (line.substring(match.end).trimLeft().startsWith('/H')) continue;
+      final tail = line.substring(match.end).trimLeft();
+      if (tail.startsWith('/H') ||
+          tail.startsWith('/L') ||
+          tail.startsWith('/KWH')) {
+        continue;
+      }
       final value = _parseOdometer(match.group(1)!);
-      if (value != null) candidates.add(value);
+      if (value != null) unitCandidates.add(value);
     }
   }
-  if (candidates.isEmpty && lines.length == 1) {
-    final onlyNumber = RegExp(
-      r'^\s*(\d{1,3}(?:[., ]\d{3})+|\d{3,7})\s*$',
-    ).firstMatch(lines.single);
-    if (onlyNumber != null) {
-      final value = _parseOdometer(onlyNumber.group(1)!);
-      if (value != null) candidates.add(value);
-    }
+
+  // Ưu tiên số có nhãn ODO/ODOMETER/SO KM rõ ràng; tuyệt đối không nhận số trơ trọi không có ngữ cảnh
+  if (labeledCandidates.isNotEmpty) {
+    return _single(labeledCandidates);
   }
-  return _single(candidates);
+  return _single(unitCandidates);
 }
 
 int? _parseOdometer(String text) {

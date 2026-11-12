@@ -28,7 +28,8 @@ class AutoVisionResult {
 
   final AutoVisionSuggestion? suggestion;
   final String? reason;
-  bool get accepted => suggestion != null && reason == null;
+  bool get accepted => suggestion != null && reason == null && suggestion!.make != 'Khác';
+  bool get isOther => suggestion == null || suggestion!.make == 'Khác' || reason != null;
 }
 
 class OnDeviceAutoVisionRecognizer implements AutoVisionRecognizer {
@@ -63,22 +64,23 @@ class OnDeviceAutoVisionRecognizer implements AutoVisionRecognizer {
     try {
       final shape = interpreter.getInputTensor(0).shape;
       final outputShape = interpreter.getOutputTensor(0).shape;
+      final inputSize = (manifest['input_size'] as num?)?.toInt() ?? 300;
       if (shape.length != 4 ||
           shape[0] != 1 ||
-          shape[1] != 384 ||
-          shape[2] != 384 ||
+          shape[1] != inputSize ||
+          shape[2] != inputSize ||
           shape[3] != 3 ||
           outputShape.length != 2 ||
           outputShape[0] != 1 ||
           outputShape[1] != classes.length) {
-        throw StateError('AutoVision model và class mapping không khớp.');
+        throw StateError('Mô hình nhận diện xe và danh sách lớp không khớp.');
       }
       final output = [List<double>.filled(classes.length, 0)];
       final worker = await IsolateInterpreter.create(
         address: interpreter.address,
       );
       try {
-        await worker.run(pixels.reshape([1, 384, 384, 3]), output);
+        await worker.run(pixels.reshape([1, inputSize, inputSize, 3]), output);
       } finally {
         await worker.close();
       }
@@ -101,18 +103,19 @@ Float32List _preprocess(Uint8List bytes) {
     width: side,
     height: side,
   );
+  const inputSize = 300;
   final resized = img.copyResize(
     cropped,
-    width: 384,
-    height: 384,
+    width: inputSize,
+    height: inputSize,
     interpolation: img.Interpolation.linear,
   );
-  final pixels = Float32List(384 * 384 * 3);
+  final pixels = Float32List(inputSize * inputSize * 3);
   const means = [0.485, 0.456, 0.406];
   const stds = [0.229, 0.224, 0.225];
   var index = 0;
-  for (var y = 0; y < 384; y++) {
-    for (var x = 0; x < 384; x++) {
+  for (var y = 0; y < inputSize; y++) {
+    for (var x = 0; x < inputSize; x++) {
       final pixel = resized.getPixel(x, y);
       pixels[index++] = (pixel.rNormalized - means[0]) / stds[0];
       pixels[index++] = (pixel.gNormalized - means[1]) / stds[1];
@@ -130,9 +133,9 @@ AutoVisionResult classifyAutoVision(
   List<Map<String, dynamic>> pairs,
 ) {
   if (logits.length != classes.length || logits.isEmpty) {
-    throw ArgumentError('AutoVision output và class mapping không khớp.');
+    throw ArgumentError('Output của mô hình và danh mục lớp không khớp.');
   }
-  final temperature = (manifest['temperature'] as num).toDouble();
+  final temperature = (manifest['temperature'] as num?)?.toDouble() ?? 1.0;
   final maxLogit = logits.reduce(math.max);
   final exponentials = logits
       .map((value) => math.exp((value - maxLogit) / temperature))
@@ -142,39 +145,33 @@ AutoVisionResult classifyAutoVision(
   final order = List<int>.generate(logits.length, (index) => index)
     ..sort((a, b) => probabilities[b].compareTo(probabilities[a]));
   final topIndex = order.first;
+  final runnerUpIndex = order.length > 1 ? order[1] : order[0];
   final top = classes[topIndex];
   final confidence = probabilities[topIndex];
-  if (top['rarity'] == 'BACKGROUND' ||
-      confidence < (manifest['ood_threshold'] as num).toDouble()) {
-    return const AutoVisionResult(suggestion: null, reason: 'not_a_car');
+  final runnerUpProb = probabilities[runnerUpIndex];
+  final margin = confidence - runnerUpProb;
+
+  final minProbability =
+      (manifest['min_probability'] as num?)?.toDouble() ?? 0.50;
+  final minMargin = (manifest['min_margin'] as num?)?.toDouble() ?? 0.10;
+
+  // Unknown Guard: nếu độ tin cậy < 50% hoặc khoảng cách giữa top 1 và top 2 < 10%
+  // thì xác định là xe lạ / không chắc chắn -> gán vào loại xe "Khác"
+  if (confidence < minProbability || margin < minMargin) {
+    return const AutoVisionResult(
+      suggestion: AutoVisionSuggestion(
+        make: 'Khác',
+        model: 'Khác',
+        confidence: 0.0,
+      ),
+      reason: 'unknown_or_low_confidence',
+    );
   }
-  final thresholds = manifest['confidence_thresholds'] as Map<String, dynamic>;
-  final threshold = (thresholds[top['rarity']] as num?)?.toDouble() ?? 0.5;
-  if (confidence < threshold) {
-    return const AutoVisionResult(suggestion: null, reason: 'low_confidence');
-  }
-  final carOrder = order
-      .where((index) => classes[index]['rarity'] != 'BACKGROUND')
-      .toList();
-  if (carOrder.length > 1) {
-    final firstName = classes[carOrder[0]]['class_name'];
-    final secondName = classes[carOrder[1]]['class_name'];
-    for (final pair in pairs) {
-      if ((pair['class_a'] == firstName && pair['class_b'] == secondName) ||
-          (pair['class_a'] == secondName && pair['class_b'] == firstName)) {
-        final margin =
-            (pair['margin_threshold'] as num?)?.toDouble() ??
-            (manifest['confusion_pair_margin'] as num).toDouble();
-        if (confidence - probabilities[carOrder[1]] < margin) {
-          return const AutoVisionResult(suggestion: null, reason: 'ambiguous');
-        }
-      }
-    }
-  }
+
   return AutoVisionResult(
     suggestion: AutoVisionSuggestion(
-      make: top['make'] as String,
-      model: top['model'] as String,
+      make: (top['make'] ?? 'Khác') as String,
+      model: (top['model'] ?? top['model_variant'] ?? 'Khác') as String,
       confidence: confidence,
     ),
     reason: null,
