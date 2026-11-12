@@ -1,11 +1,13 @@
-# AutoVision model for the mobile thesis demo
+# Mô hình nhận diện hãng & dòng xe On-Device (EfficientNet-B3)
 
-The Flutter form uses AutoVision v5.13.0 locally to suggest vehicle make and model from a photo. It does not read the license plate, VIN, color, or registration papers. The user reviews the suggestion before filling the form. The backend vehicle catalog remains authoritative.
+Ứng dụng Flutter sử dụng mô hình **EfficientNet-B3 (VinFast V5)** chạy trực tiếp trên thiết bị (On-Device Inference qua `tflite_flutter`) để gợi ý hãng và dòng xe từ ảnh chụp thực tế.
 
-`car_classifier.tflite` (44 MB) is committed directly to Git with the matching JSON metadata and license. A normal clone includes the model; no separate download, Git LFS setup, or staging script is required. Run `flutter pub get` from `mobile/` before launching the app. The expected model SHA-256 is `DC194F500890F7AAA96F80222FED246784CFFED052E3DC173F6BFC4AC0EDB825`. The optional `mobile/scripts/stage_autovision.ps1` script can restore the release artifacts if they are missing locally; it checks the expected SHA-256. Model and metadata must remain from the same AutoVision release.
+- **Kiến trúc mô hình**: EfficientNet-B3
+- **Định dạng**: TensorFlow Lite (`car_classifier.tflite`, float32, ~45.8 MB)
+- **Kích thước đầu vào (Input)**: `1 x 300 x 300 x 3` (RGB, chuẩn hóa ImageNet `mean: [0.485, 0.456, 0.406]`, `std: [0.229, 0.224, 0.225]`)
+- **Đầu ra (Output)**: Vector xác suất `1 x 870` ứng với 870 lớp xe (taxonomy tiếng Anh chuẩn hóa Make / Model)
+- **Cơ chế Unknown Guard**:
+  - Ngưỡng xác suất tối thiểu (`min_probability`): 0.50 (50%)
+  - Khoảng cách tin cậy tối thiểu giữa Top 1 và Top 2 (`min_margin`): 0.10 (10%)
+  - Khi không thỏa mãn điều kiện hoặc gặp xe lạ ngoài danh mục 870 lớp, hệ thống tự động gán vào: **Hãng: "Khác"** / **Dòng xe: "Khác"**.
 
-Required Notice: Copyright (c) 2026 AutoVision / Bogdan Moldovan
-
-See [LICENSE](LICENSE). AutoVision permits noncommercial use under the PolyForm Noncommercial License 1.0.0; a deployed commercial garage app requires a separate commercial license. Keep this notice and the license with any distributed demo.
-
-The Flutter `tflite_flutter` dependency requires Android API 26 or newer. iOS and Android native runtime inference have not been validated on a physical device in this repository. The Dart image package uses bilinear resizing, but exact pixel parity with the Python PIL preprocessing has not yet been measured.

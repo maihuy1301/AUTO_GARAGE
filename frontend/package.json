@@ -4,9 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "predev": "node -e \"if (!require('fs').existsSync('node_modules/vite/bin/vite.js')) require('child_process').execSync('npm install --prefer-offline --no-audit --no-fund', {stdio: 'inherit'})\"",
     "dev": "vite",
-    "prebuild": "node -e \"if (!require('fs').existsSync('node_modules/vite/bin/vite.js')) require('child_process').execSync('npm install --prefer-offline --no-audit --no-fund', {stdio: 'inherit'})\"",
     "build": "tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

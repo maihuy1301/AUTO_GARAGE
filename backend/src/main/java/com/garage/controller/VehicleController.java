@@ -3,17 +3,13 @@ package com.garage.controller;
 import com.garage.dto.ApiResponse;
 import com.garage.dto.CreateVehicleRequest;
 import com.garage.dto.UpdateVehicleRequest;
-import com.garage.dto.VehicleAiRecognitionResponse;
 import com.garage.dto.VehicleResponse;
-import com.garage.service.VehicleAiService;
 import com.garage.service.VehicleService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -30,20 +26,9 @@ import java.util.List;
 public class VehicleController {
 
     private final VehicleService vehicleService;
-    private final VehicleAiService vehicleAiService;
 
-    public VehicleController(VehicleService vehicleService, VehicleAiService vehicleAiService) {
+    public VehicleController(VehicleService vehicleService) {
         this.vehicleService = vehicleService;
-        this.vehicleAiService = vehicleAiService;
-    }
-
-    /** POST /api/vehicles/recognize — Nhận diện hãng & dòng xe từ ảnh chụp qua AI Service */
-    @PostMapping(value = "/recognize", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'FRONT_DESK', 'CUSTOMER')")
-    public ResponseEntity<ApiResponse<VehicleAiRecognitionResponse>> recognizeVehicle(
-            @RequestParam("file") MultipartFile file) {
-        VehicleAiRecognitionResponse result = vehicleAiService.recognize(file);
-        return ResponseEntity.ok(ApiResponse.success("Nhận diện xe thành công", result));
     }
 
     /** GET /api/vehicles — Danh sách xe (ADMIN/MANAGER/FRONT_DESK: toàn bộ hoặc theo customerId, CUSTOMER: xe của mình) */
