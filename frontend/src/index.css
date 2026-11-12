@@ -646,6 +646,14 @@ input, select, textarea {
   outline: none;
 }
 
+/* Ẩn biểu tượng xem mật khẩu mặc định của trình duyệt (Microsoft Edge / IE) */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
 .form-input.has-left-icon {
   padding-left: 40px;
 }

@@ -849,6 +849,27 @@ DECLARE @model99 INT = (SELECT MaModel FROM dbo.ModelXe WHERE MaHangXe=@brand24 
 IF @model99 IS NULL BEGIN
 INSERT INTO dbo.ModelXe (MaHangXe, TenModel, TrangThai) VALUES (@brand24, N'M6', 1);
 SET @model99=CONVERT(INT,SCOPE_IDENTITY()); END
+
+-- Hãng xe 'Khác' và Model 'Khác' cho tất cả hãng xe
+DECLARE @brandOther INT;
+IF (SELECT COUNT(*) FROM dbo.HangXe WHERE TenHangXe = N'Khác') > 1 THROW 51101, 'Ambiguous HangXe key; inspect before seeding.', 1;
+SELECT @brandOther = MaHangXe FROM dbo.HangXe WHERE TenHangXe = N'Khác';
+IF @brandOther IS NULL
+BEGIN
+    INSERT INTO dbo.HangXe (TenHangXe, TrangThai) VALUES (N'Khác', 1);
+    SET @brandOther = CONVERT(INT, SCOPE_IDENTITY());
+END
+ELSE UPDATE dbo.HangXe SET TrangThai = 1 WHERE MaHangXe = @brandOther;
+
+-- Bổ sung model 'Khác' cho tất cả các hãng xe trong hệ thống nếu chưa tồn tại
+INSERT INTO dbo.ModelXe (MaHangXe, TenModel, TrangThai)
+SELECT h.MaHangXe, N'Khác', 1
+FROM dbo.HangXe h
+WHERE NOT EXISTS (
+    SELECT 1 FROM dbo.ModelXe m
+    WHERE m.MaHangXe = h.MaHangXe AND m.TenModel = N'Khác'
+);
+
 DECLARE @part0 INT;
 IF (SELECT COUNT(*) FROM dbo.PhuTung WHERE MaPhuTungCode = N'OIL-5W30') > 1 THROW 51101, 'Ambiguous PhuTung key; inspect before seeding.', 1;
 SELECT @part0 = MaPhuTung FROM dbo.PhuTung WHERE MaPhuTungCode = N'OIL-5W30';

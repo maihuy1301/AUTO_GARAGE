@@ -142,7 +142,7 @@ public class TechnicianAssignmentService {
 
         // 5. Xác định người phân công từ Authenticated User
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        NhanVien currentStaff = getCurrentEmployee(auth);
+        NhanVien currentStaff = resolveStaff(auth, order.getChiNhanh());
 
         PhanCong phanCong = new PhanCong();
         phanCong.setPhieuSuaChua(order);
@@ -234,7 +234,7 @@ public class TechnicianAssignmentService {
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        NhanVien manager = getCurrentEmployee(auth);
+        NhanVien manager = resolveStaff(auth, order.getChiNhanh());
 
         assignment.setNguoiDuyet(manager);
         assignment.setTrangThai("DA_DUYET");
@@ -258,20 +258,42 @@ public class TechnicianAssignmentService {
                     continue;
                 }
                 List<PhanCong> childAssignments = phanCongRepository.findByPhieuSuaChuaMaPhieuSuaChua(childOrder.getMaPhieuSuaChua());
+                boolean foundChildAssignment = false;
                 for (PhanCong childPc : childAssignments) {
-                    if ("CHO_DUYET".equalsIgnoreCase(childPc.getTrangThai())
-                            && childPc.getNhanVienDuocPhanCong() != null
+                    if (childPc.getNhanVienDuocPhanCong() != null
                             && childPc.getNhanVienDuocPhanCong().getMaNhanVien().equals(techId)) {
-                        childPc.setNguoiDuyet(manager);
-                        childPc.setTrangThai("DA_DUYET");
-                        childPc.setThoiGianDuyet(LocalDateTime.now());
-                        phanCongRepository.save(childPc);
+                        foundChildAssignment = true;
+                        if ("CHO_DUYET".equalsIgnoreCase(childPc.getTrangThai())) {
+                            childPc.setNguoiDuyet(manager);
+                            childPc.setTrangThai("DA_DUYET");
+                            childPc.setThoiGianDuyet(LocalDateTime.now());
+                            phanCongRepository.save(childPc);
 
-                        if ("CHO_XU_LY".equalsIgnoreCase(childOrder.getTrangThai())) {
-                            childOrder.setTrangThai("DA_PHAN_CONG");
-                            phieuSuaChuaRepository.save(childOrder);
-                            customerProgressNotifier.repairChanged(childOrder, "CHO_XU_LY");
+                            if ("CHO_XU_LY".equalsIgnoreCase(childOrder.getTrangThai())) {
+                                childOrder.setTrangThai("DA_PHAN_CONG");
+                                phieuSuaChuaRepository.save(childOrder);
+                                customerProgressNotifier.repairChanged(childOrder, "CHO_XU_LY");
+                            }
                         }
+                    }
+                }
+
+                if (!foundChildAssignment) {
+                    PhanCong childPc = new PhanCong();
+                    childPc.setPhieuSuaChua(childOrder);
+                    childPc.setNhanVienDuocPhanCong(assignment.getNhanVienDuocPhanCong());
+                    childPc.setNguoiPhanCong(assignment.getNguoiPhanCong() != null ? assignment.getNguoiPhanCong() : manager);
+                    childPc.setNguoiDuyet(manager);
+                    childPc.setTrangThai("DA_DUYET");
+                    childPc.setThoiGianTao(LocalDateTime.now());
+                    childPc.setThoiGianDuyet(LocalDateTime.now());
+                    childPc.setGhiChu(assignment.getGhiChu() != null ? assignment.getGhiChu() : ("Đồng bộ duyệt phân công từ Phiếu cha #" + order.getMaPhieuSuaChua()));
+                    phanCongRepository.save(childPc);
+
+                    if ("CHO_XU_LY".equalsIgnoreCase(childOrder.getTrangThai())) {
+                        childOrder.setTrangThai("DA_PHAN_CONG");
+                        phieuSuaChuaRepository.save(childOrder);
+                        customerProgressNotifier.repairChanged(childOrder, "CHO_XU_LY");
                     }
                 }
             }
@@ -298,7 +320,7 @@ public class TechnicianAssignmentService {
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        NhanVien manager = getCurrentEmployee(auth);
+        NhanVien manager = resolveStaff(auth, order.getChiNhanh());
 
         assignment.setNguoiDuyet(manager);
         assignment.setTrangThai("TU_CHOI");
@@ -399,7 +421,7 @@ public class TechnicianAssignmentService {
         }
     }
 
-    private NhanVien getCurrentEmployee(Authentication auth) {
+    private NhanVien resolveStaff(Authentication auth, ChiNhanh branch) {
         if (auth == null || !auth.isAuthenticated()) {
             throw new AccessDeniedException("Unauthorized: Bạn chưa đăng nhập");
         }
@@ -413,8 +435,23 @@ public class TechnicianAssignmentService {
                     .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy thông tin tài khoản: " + username));
         }
 
-        return nhanVienRepository.findByNguoiDungMaNguoiDung(user.getMaNguoiDung())
-                .orElseThrow(() -> new AccessDeniedException("Forbidden: Tài khoản này không được liên kết với nhân viên garage"));
+        Optional<NhanVien> empOpt = nhanVienRepository.findByNguoiDungMaNguoiDung(user.getMaNguoiDung());
+        if (empOpt.isPresent()) {
+            return empOpt.get();
+        }
+
+        if (isAdmin(auth) && branch != null) {
+            List<NhanVien> staffList = nhanVienRepository.findByChiNhanhMaChiNhanh(branch.getMaChiNhanh());
+            if (!staffList.isEmpty()) {
+                return staffList.stream()
+                        .filter(nv -> nv.getChucVu() != null && nv.getChucVu().toLowerCase().contains("quản lý"))
+                        .findFirst()
+                        .orElse(staffList.get(0));
+            }
+            throw new BadRequestException("Không tìm thấy nhân viên nào thuộc chi nhánh " + branch.getTenChiNhanh() + " để thực hiện phân công");
+        }
+
+        throw new AccessDeniedException("Forbidden: Tài khoản này không được liên kết với nhân viên garage");
     }
 
     private boolean isManagerOrAdmin(Authentication auth) {
